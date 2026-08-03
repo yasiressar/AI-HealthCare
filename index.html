@@ -1,0 +1,3479 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- ==========================================================================
+     SEO / SOCIAL METADATA
+     ========================================================================== -->
+<title>Meridian — Health AI Governance Observatory</title>
+<meta name="description" content="A working reference for the regulation, ethics, and governance of artificial intelligence in health care: nine jurisdictions, dated obligations, primary sources.">
+<meta name="author" content="Meridian Health AI Governance Observatory">
+<meta name="theme-color" content="#05070E">
+<link rel="canonical" href="https://example.org/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Meridian — Health AI Governance Observatory">
+<meta property="og:description" content="Nine jurisdictions. Four clocks. One patient in front of you. A working reference for clinical AI regulation, ethics, and governance.">
+<meta property="og:url" content="https://example.org/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Meridian — Health AI Governance Observatory">
+<meta name="twitter:description" content="A working reference for clinical AI regulation, ethics, and governance.">
+
+<!-- ==========================================================================
+     FONTS
+     Newsreader  — display serif, screen-optimised; carries the editorial voice
+     IBM Plex Sans — body; institutional, engineered, legible on dark surfaces
+     IBM Plex Mono — data, dates, and legal citations (Art. 50(2), Annex III…)
+     ========================================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300&display=swap">
+
+<style>
+/* ==========================================================================
+   MERIDIAN — Health AI Governance Observatory
+   --------------------------------------------------------------------------
+   Contents
+     01  Design tokens
+     02  Reset and base
+     03  Typography
+     04  Layout shell and section rhythm
+     05  Buttons and links
+     06  Loader, cursor light, ambient field
+     07  Masthead and navigation
+     08  Hero
+     09  Regulatory Horizon (signature element)
+     10  Baseline section: stats and split
+     11  Jurisdictions: dot map, panel, cards
+     12  Ethics cards
+     13  Timeline, comparison, principles
+     14  Outlook ledger
+     15  Resources
+     16  Accordion
+     17  Contact form and footer
+     18  Back to top
+     19  Reveal animations
+     20  Responsive
+     21  Reduced motion, forced colours, print
+
+   Palette rationale: the brief specifies a dark surface with blue, cyan and
+   purple accents. Amber is added as a fifth colour reserved for regulatory
+   status ("deferred", "contested") — status is the subject matter here, so it
+   earns a hue outside the accent family rather than being decoration.
+   ========================================================================== */
+
+
+/* 01  DESIGN TOKENS
+   ========================================================================== */
+:root {
+  /* Surfaces — near-black with a blue undertone */
+  --ink-900: #05070E;
+  --ink-850: #070A14;
+  --ink-800: #0A0E1C;
+  --ink-700: #111729;
+  --ink-600: #1A2137;
+
+  /* Accents */
+  --cyan:   #4DE1F2;
+  --azure:  #5B8CFF;
+  --violet: #A78BFA;
+  --amber:  #FFB35C;
+
+  /* Text — all pairings below meet or exceed WCAG AA on --ink-900 */
+  --paper:  #E9EDF8;   /* ~17:1  */
+  --muted:  #99A3BC;   /* ~7.4:1 */
+  --faint:  #6C7793;   /* ~4.6:1 — small print only */
+
+  /* Lines and glass */
+  --line:        rgba(150, 170, 215, 0.14);
+  --line-strong: rgba(150, 170, 215, 0.26);
+  --glass:       rgba(150, 175, 230, 0.045);
+  --glass-hi:    rgba(150, 175, 230, 0.085);
+
+  /* Type */
+  --display: "Newsreader", Georgia, "Times New Roman", serif;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Fluid scale */
+  --t-hero:  clamp(2.6rem, 6.4vw, 5.1rem);
+  --t-h2:    clamp(1.85rem, 3.5vw, 2.95rem);
+  --t-h3:    clamp(1.25rem, 1.9vw, 1.6rem);
+  --t-lede:  clamp(1.03rem, 1.25vw, 1.22rem);
+  --t-body:  1rem;
+  --t-small: 0.875rem;
+  --t-mono:  0.7rem;
+
+  /* Rhythm */
+  --shell: 1240px;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+  --band-y: clamp(5rem, 11vh, 9rem);
+
+  /* Motion */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --ease-io: cubic-bezier(.65, .05, .36, 1);
+  --fast: 180ms;
+  --mid: 320ms;
+  --slow: 720ms;
+
+  --radius: 14px;
+  --radius-sm: 9px;
+}
+
+
+/* 02  RESET AND BASE
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* Keeps anchored sections clear of the sticky masthead */
+  scroll-padding-top: 92px;
+}
+
+body {
+  margin: 0;
+  background: var(--ink-900);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  font-weight: 300;
+  line-height: 1.65;
+  letter-spacing: 0.002em;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Ambient wash so the dark surface is never flat.
+   Fixed and cheap: one paint, no repaints on scroll. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 40rem at 12% -8%, rgba(91, 140, 255, 0.16), transparent 62%),
+    radial-gradient(48rem 36rem at 92% 4%, rgba(167, 139, 250, 0.13), transparent 60%),
+    radial-gradient(52rem 40rem at 50% 108%, rgba(77, 225, 242, 0.08), transparent 65%);
+}
+
+img, svg { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; }
+
+::selection { background: rgba(77, 225, 242, 0.28); color: #fff; }
+
+/* Visible, high-contrast focus ring everywhere */
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0; left: 50%;
+  transform: translate(-50%, -120%);
+  z-index: 1000;
+  padding: 0.7rem 1.2rem;
+  background: var(--cyan);
+  color: #041018;
+  font-weight: 600;
+  font-size: var(--t-small);
+  border-radius: 0 0 8px 8px;
+  transition: transform var(--fast) var(--ease);
+}
+.skip-link:focus { transform: translate(-50%, 0); }
+
+
+/* 03  TYPOGRAPHY
+   ========================================================================== */
+.h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: var(--t-h2);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: var(--t-h3);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.label { color: var(--cyan); margin: 0 0 1.1rem; }
+
+.lede {
+  font-size: var(--t-lede);
+  line-height: 1.62;
+  color: var(--muted);
+  max-width: 34em;
+  margin: 0;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 1.6rem;
+  padding: 0.4rem 0.85rem 0.4rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  background: var(--glass);
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  backdrop-filter: blur(10px);
+}
+.eyebrow time { color: var(--paper); }
+
+.pulse {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 0 0 rgba(77, 225, 242, 0.7);
+  animation: pulse 2.6s var(--ease-io) infinite;
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(77, 225, 242, 0.55); }
+  70%  { box-shadow: 0 0 0 9px rgba(77, 225, 242, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(77, 225, 242, 0); }
+}
+
+
+/* 04  LAYOUT SHELL AND SECTION RHYTHM
+   Section padding lives on .band only, so no other rule competes for it.
+   ========================================================================== */
+.shell {
+  width: 100%;
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  position: relative;
+  z-index: 1;
+}
+.shell--narrow { max-width: 860px; }
+
+.band {
+  position: relative;
+  z-index: 1;
+  padding-block: var(--band-y);
+}
+.band--alt { background: linear-gradient(180deg, transparent, rgba(10, 14, 28, 0.72) 18%, rgba(10, 14, 28, 0.72) 82%, transparent); }
+.band--cta { padding-bottom: calc(var(--band-y) * 1.1); }
+
+/* Hairline divider between bands */
+.band + .band::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: min(100% - 2 * var(--gutter), var(--shell));
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-strong) 22%, var(--line-strong) 78%, transparent);
+}
+
+.section-head { max-width: 44rem; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+.section-head .h2 { margin-bottom: 1.2rem; }
+.section-head__lede {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--t-lede);
+  max-width: 36em;
+}
+
+.subhead {
+  margin-block: clamp(3.5rem, 7vw, 5.5rem) 2rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--line);
+}
+
+/* Frosted panel used across cards and panels */
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+}
+
+
+/* 05  BUTTONS AND LINKS
+   ========================================================================== */
+a { color: var(--cyan); text-decoration: none; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.82rem 1.4rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 100px;
+  font-size: var(--t-small);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform var(--fast) var(--ease),
+              border-color var(--fast) var(--ease),
+              background-color var(--fast) var(--ease),
+              box-shadow var(--fast) var(--ease);
+}
+.btn svg { width: 15px; height: 15px; transition: transform var(--mid) var(--ease); }
+.btn:hover svg { transform: translateX(3px); }
+.btn:active { transform: translateY(1px); }
+
+.btn--primary {
+  color: #04121A;
+  border-color: transparent;
+  background: linear-gradient(105deg, var(--cyan), #7FB4FF 52%, var(--violet));
+  font-weight: 600;
+  box-shadow: 0 6px 26px -10px rgba(77, 225, 242, 0.6);
+}
+/* Sheen sweep on hover — one transform, GPU only */
+.btn--primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.55), transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 620ms var(--ease);
+}
+.btn--primary:hover { box-shadow: 0 10px 34px -10px rgba(77, 225, 242, 0.75); }
+.btn--primary:hover::after { transform: translateX(120%); }
+
+.btn--quiet, .btn--ghost {
+  color: var(--paper);
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+}
+.btn--quiet:hover, .btn--ghost:hover {
+  background: var(--glass-hi);
+  border-color: rgba(77, 225, 242, 0.5);
+}
+.btn--ghost { padding: 0.6rem 1.1rem; }
+.btn--full { width: 100%; justify-content: center; }
+
+
+/* 06  LOADER, CURSOR LIGHT, AMBIENT FIELD
+   ========================================================================== */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: grid;
+  place-items: center;
+  background: var(--ink-900);
+  transition: opacity 520ms var(--ease), visibility 520ms;
+}
+.loader.is-done { opacity: 0; visibility: hidden; }
+.loader__inner { display: grid; justify-items: center; gap: 1.4rem; }
+.loader__mark { width: 54px; height: 54px; animation: spin 1.5s linear infinite; }
+.loader__ring { stroke: var(--line-strong); }
+.loader__arc { stroke: var(--cyan); }
+.loader__dot { fill: var(--violet); }
+.loader__label {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--faint);
+  animation: breathe 2.2s var(--ease-io) infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes breathe { 50% { opacity: 0.4; } }
+
+.cursor-glow {
+  position: fixed;
+  top: 0; left: 0;
+  width: 460px; height: 460px;
+  margin: -230px 0 0 -230px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(91, 140, 255, 0.16), rgba(77, 225, 242, 0.07) 42%, transparent 68%);
+  transition: opacity 500ms var(--ease);
+  will-change: transform;
+}
+.cursor-glow.is-on { opacity: 1; }
+
+.field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease);
+}
+.field.is-on { opacity: 1; }
+
+
+/* 07  MASTHEAD AND NAVIGATION
+   ========================================================================== */
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background-color var(--mid) var(--ease), border-color var(--mid) var(--ease);
+  border-bottom: 1px solid transparent;
+}
+.masthead.is-stuck {
+  background: rgba(5, 7, 14, 0.78);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-bottom-color: var(--line);
+}
+
+.masthead__inner {
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding: 0.95rem var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.masthead__progress {
+  position: absolute;
+  bottom: -1px; left: 0;
+  height: 1px;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--cyan), var(--azure) 55%, var(--violet));
+}
+
+.brand { display: flex; align-items: center; gap: 0.7rem; margin-right: auto; color: var(--paper); }
+.brand__mark { width: 30px; height: 30px; transition: transform 600ms var(--ease); }
+.brand:hover .brand__mark { transform: rotate(-12deg) scale(1.06); }
+.brand__text { display: grid; line-height: 1.15; }
+.brand__text strong {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 1.16rem;
+  letter-spacing: -0.01em;
+}
+.brand__text span {
+  font-family: var(--mono);
+  font-size: 0.585rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.nav { display: flex; align-items: center; gap: 1.6rem; }
+.nav__list { display: flex; align-items: center; gap: 0.35rem; list-style: none; margin: 0; padding: 0; }
+.nav__list a {
+  position: relative;
+  display: block;
+  padding: 0.45rem 0.72rem;
+  color: var(--muted);
+  font-size: 0.855rem;
+  border-radius: 7px;
+  transition: color var(--fast) var(--ease), background-color var(--fast) var(--ease);
+}
+.nav__list a:hover { color: var(--paper); background: var(--glass); }
+/* Active section underline — the dot travels with the reader */
+.nav__list a::after {
+  content: "";
+  position: absolute;
+  left: 0.72rem; right: 0.72rem; bottom: 0.18rem;
+  height: 1px;
+  background: var(--cyan);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform var(--mid) var(--ease);
+}
+.nav__list a.is-active { color: var(--paper); }
+.nav__list a.is-active::after { transform: scaleX(1); }
+
+.menu-toggle {
+  display: none;
+  width: 42px; height: 42px;
+  place-items: center;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.menu-toggle__bars { display: grid; gap: 5px; }
+.menu-toggle__bars i {
+  display: block;
+  width: 17px; height: 1.5px;
+  background: var(--paper);
+  border-radius: 2px;
+  transition: transform var(--mid) var(--ease), opacity var(--fast) linear;
+}
+.menu-toggle[aria-expanded="true"] .menu-toggle__bars i:first-child { transform: translateY(3.25px) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] .menu-toggle__bars i:last-child  { transform: translateY(-3.25px) rotate(-45deg); }
+
+
+/* 08  HERO
+   ========================================================================== */
+.hero {
+  position: relative;
+  z-index: 1;
+  padding-block: clamp(3.5rem, 9vh, 7rem) clamp(4rem, 8vh, 6.5rem);
+  min-height: min(92svh, 900px);
+  display: flex;
+  align-items: center;
+}
+
+.hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: clamp(2.5rem, 5vw, 4.5rem);
+  align-items: center;
+}
+
+.hero__title {
+  margin: 0 0 1.7rem;
+  font-family: var(--display);
+  font-weight: 300;
+  font-size: var(--t-hero);
+  line-height: 1.02;
+  letter-spacing: -0.032em;
+}
+.hero__title .line { display: block; }
+.hero__title .line--accent {
+  background: linear-gradient(96deg, var(--cyan), #85B6FF 46%, var(--violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-style: italic;
+  font-weight: 300;
+}
+
+.hero__actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 2.2rem; }
+
+.hero__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.4rem, 3vw, 2.8rem);
+  margin: 3rem 0 0;
+  padding-top: 1.7rem;
+  border-top: 1px solid var(--line);
+}
+.hero__facts dt {
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 0.28rem;
+}
+.hero__facts dd {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 1.85rem;
+  font-weight: 400;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.hero__facts .unit { font-size: 1.05rem; color: var(--muted); margin-left: 0.1em; }
+
+.hero__scroll {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 1.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: color var(--fast) var(--ease);
+}
+.hero__scroll:hover { color: var(--cyan); }
+.hero__scrollLine {
+  width: 62px; height: 1px;
+  background: var(--line-strong);
+  position: relative;
+  overflow: hidden;
+}
+.hero__scrollLine::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  animation: trace 2.8s var(--ease-io) infinite;
+}
+@keyframes trace {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+
+/* 09  REGULATORY HORIZON — signature element
+   A live instrument: dates are real, positions and states are computed from
+   the clock so the panel never goes stale.
+   ========================================================================== */
+.horizon {
+  position: relative;
+  padding: clamp(1.5rem, 2.4vw, 2rem);
+  background: linear-gradient(165deg, rgba(150, 175, 230, 0.075), rgba(150, 175, 230, 0.02));
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  box-shadow: 0 30px 70px -40px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+/* Slow sheen across the glass; purely ambient, one property animated */
+.horizon::before {
+  content: "";
+  position: absolute;
+  top: -60%; left: -30%;
+  width: 60%; height: 220%;
+  background: linear-gradient(90deg, transparent, rgba(77, 225, 242, 0.055), transparent);
+  transform: rotate(14deg);
+  animation: sheen 9s var(--ease-io) infinite;
+  pointer-events: none;
+}
+@keyframes sheen {
+  0%, 100% { transform: translateX(0) rotate(14deg); opacity: 0; }
+  40%      { opacity: 1; }
+  80%      { transform: translateX(280%) rotate(14deg); opacity: 0; }
+}
+
+.horizon__head { margin-bottom: 1.4rem; }
+.horizon__title {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+.horizon__sub { margin: 0.45rem 0 0; font-size: var(--t-small); color: var(--muted); }
+
+.horizon__next {
+  display: grid;
+  gap: 0.2rem;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: rgba(5, 7, 14, 0.45);
+}
+.horizon__nextLabel {
+  font-family: var(--mono);
+  font-size: var(--t-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.horizon__nextValue {
+  font-family: var(--display);
+  font-size: clamp(1.5rem, 2.4vw, 1.95rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+.horizon__nextMeta { font-size: var(--t-small); color: var(--muted); }
+.horizon__nextMeta b { color: var(--amber); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* Axis: a single track with absolutely positioned ticks */
+.horizon__axis {
+  position: relative;
+  height: 52px;
+  margin-bottom: 1.4rem;
+}
+.horizon__track {
+  position: absolute;
+  left: 0; right: 0; top: 22px;
+  height: 1px;
+  background: var(--line-strong);
+}
+/* Elapsed portion, up to "today" */
+.horizon__elapsed {
+  position: absolute;
+  top: 22px; left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(77, 225, 242, 0.2), var(--cyan));
+  transform-origin: 0 50%;
+}
+.horizon__tick {
+  position: absolute;
+  top: 14px;
+  width: 1px; height: 17px;
+  background: var(--line-strong);
+  transform: translateX(-0.5px);
+}
+.horizon__tick[data-state="past"] { background: rgba(77, 225, 242, 0.55); }
+.horizon__tick[data-state="next"] { background: var(--amber); height: 25px; top: 10px; }
+.horizon__tickYear {
+  position: absolute;
+  top: 34px;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  white-space: nowrap;
+}
+.horizon__now {
+  position: absolute;
+  top: 4px;
+  width: 1px; height: 34px;
+  background: var(--cyan);
+  box-shadow: 0 0 12px rgba(77, 225, 242, 0.8);
+}
+.horizon__now::before {
+  content: "";
+  position: absolute;
+  top: -4px; left: -3.5px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 0 0 rgba(77, 225, 242, 0.6);
+  animation: pulse 2.6s var(--ease-io) infinite;
+}
+
+.horizon__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.1rem; }
+.horizon__item {
+  display: grid;
+  grid-template-columns: 5.6rem 1fr auto;
+  gap: 0.9rem;
+  align-items: baseline;
+  padding: 0.62rem 0;
+  border-top: 1px solid var(--line);
+  font-size: var(--t-small);
+  transition: color var(--fast) var(--ease);
+}
+.horizon__item:first-child { border-top: 0; }
+.horizon__date {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.horizon__what { color: var(--paper); }
+.horizon__what small { display: block; color: var(--faint); font-size: 0.74rem; letter-spacing: 0.01em; }
+.horizon__flag {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.16rem 0.42rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.horizon__item[data-state="past"] .horizon__what { color: var(--muted); }
+.horizon__item[data-state="past"] .horizon__flag { color: var(--cyan); background: rgba(77, 225, 242, 0.11); }
+.horizon__item[data-state="next"] { background: rgba(255, 179, 92, 0.05); }
+.horizon__item[data-state="next"] .horizon__flag { color: var(--amber); background: rgba(255, 179, 92, 0.13); }
+.horizon__item[data-state="future"] .horizon__flag { color: var(--faint); background: rgba(150, 170, 215, 0.08); }
+
+.horizon__foot {
+  margin: 1.3rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.775rem;
+  color: var(--faint);
+  line-height: 1.55;
+}
+.horizon__foot .mono { font-size: 0.66rem; color: var(--muted); }
+
+
+/* 10  BASELINE SECTION: STATS AND SPLIT
+   ========================================================================== */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+  gap: 1px;
+  margin-bottom: clamp(3.5rem, 7vw, 5.5rem);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--line);
+}
+/* Cards share hairlines via the 1px grid gap, so they read as one instrument */
+.stat {
+  border: 0;
+  border-radius: 0;
+  padding: 1.6rem 1.5rem 1.7rem;
+  background: rgba(10, 14, 28, 0.6);
+  position: relative;
+  transition: background-color var(--mid) var(--ease), transform var(--mid) var(--ease);
+}
+.stat:hover { background: rgba(17, 23, 41, 0.85); }
+.stat::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--violet));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 480ms var(--ease);
+}
+.stat:hover::after { transform: scaleX(1); }
+.stat__value {
+  margin: 0 0 0.7rem;
+  font-family: var(--display);
+  font-size: clamp(2.2rem, 4vw, 3rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper);
+}
+.stat__value .unit { font-size: 0.42em; color: var(--faint); letter-spacing: 0; }
+.stat__label {
+  margin: 0 0 0.6rem;
+  font-size: 0.925rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--paper);
+}
+.stat__note { margin: 0; font-size: 0.815rem; line-height: 1.55; color: var(--muted); }
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.86fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+}
+.split__body .h3 { margin-bottom: 1.1rem; }
+.split__body p { margin: 0 0 1.1rem; color: var(--muted); max-width: 34em; }
+.split__body em { color: var(--paper); font-style: italic; }
+
+.split__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; background: var(--line); border-radius: var(--radius); overflow: hidden; }
+.split__list li {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 1rem;
+  padding: 1.25rem 1.4rem;
+  background: rgba(10, 14, 28, 0.55);
+  transition: background-color var(--fast) var(--ease);
+}
+.split__list li:hover { background: rgba(17, 23, 41, 0.85); }
+.split__list .mono { color: var(--cyan); padding-top: 0.15rem; }
+.split__list strong { display: block; font-weight: 500; font-size: 0.94rem; margin-bottom: 0.25rem; }
+.split__list p { margin: 0; font-size: 0.83rem; color: var(--muted); line-height: 1.55; }
+
+
+/* 11  JURISDICTIONS: DOT MAP, PANEL, CARDS
+   ========================================================================== */
+.atlas {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  align-items: stretch;
+  margin-bottom: 2.5rem;
+}
+
+.atlas__map {
+  margin: 0;
+  padding: 1.2rem 1.2rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: radial-gradient(120% 120% at 50% 0%, rgba(91, 140, 255, 0.07), transparent 65%), rgba(5, 7, 14, 0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+#worldMap { width: 100%; height: auto; overflow: visible; }
+.atlas__caption { margin-top: 0.7rem; color: var(--faint); font-size: 0.6rem; letter-spacing: 0.1em; }
+
+/* Land dots — drawn as <circle> by main.js */
+.land-dot { fill: rgba(150, 175, 230, 0.2); transition: fill 400ms var(--ease); }
+
+/* Markers */
+.pin { cursor: pointer; }
+.pin__halo { fill: url(#pinGlow); opacity: 0; transition: opacity var(--mid) var(--ease); }
+.pin__ring {
+  fill: none;
+  stroke: var(--cyan);
+  stroke-width: 1;
+  opacity: 0.5;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.pin__core { fill: var(--cyan); transition: fill var(--fast) var(--ease); }
+.pin__label {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  fill: var(--muted);
+  text-anchor: middle;
+  transition: fill var(--fast) var(--ease);
+  pointer-events: none;
+}
+.pin:hover .pin__halo, .pin.is-selected .pin__halo { opacity: 1; }
+.pin:hover .pin__label, .pin.is-selected .pin__label { fill: var(--paper); }
+.pin.is-selected .pin__core { fill: #fff; }
+.pin.is-selected .pin__ring { opacity: 1; animation: ping 2.2s var(--ease-io) infinite; }
+.pin:focus-visible { outline: none; }
+.pin:focus-visible .pin__ring { opacity: 1; stroke: var(--violet); stroke-width: 1.6; }
+@keyframes ping {
+  0%   { transform: scale(1);   opacity: 0.9; }
+  70%  { transform: scale(2.6); opacity: 0; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* Detail panel */
+.atlas__panel { padding: clamp(1.4rem, 2.2vw, 1.9rem); display: flex; flex-direction: column; }
+.jp__top { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.1rem; }
+.jp__code {
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.14em;
+  padding: 0.28rem 0.5rem;
+  border-radius: 5px;
+  background: rgba(77, 225, 242, 0.12);
+  color: var(--cyan);
+}
+.jp__posture { font-family: var(--mono); font-size: 0.63rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+.jp__name { margin: 0 0 0.5rem; font-family: var(--display); font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 400; letter-spacing: -0.015em; }
+.jp__thesis { margin: 0 0 1.3rem; font-size: 0.93rem; color: var(--muted); line-height: 1.6; }
+.jp__rows { list-style: none; margin: 0 0 1.3rem; padding: 0; display: grid; gap: 0.75rem; }
+.jp__rows li { display: grid; grid-template-columns: 6.4rem 1fr; gap: 0.9rem; font-size: 0.85rem; align-items: baseline; }
+.jp__rows dt, .jp__k {
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  padding-top: 0.15rem;
+}
+.jp__v { color: var(--paper); line-height: 1.5; }
+.jp__v em { color: var(--muted); font-style: normal; }
+.jp__foot { margin-top: auto; padding-top: 1.1rem; border-top: 1px solid var(--line); }
+.jp__link { font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.4rem; }
+.jp__link:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* Panel content fades in when the selection changes */
+.jp-anim { animation: panelIn 420ms var(--ease) both; }
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Region cards */
+.jur-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+.jur-card {
+  text-align: left;
+  padding: 1.05rem 1.15rem;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: grid;
+  gap: 0.4rem;
+  transition: transform var(--mid) var(--ease), border-color var(--mid) var(--ease),
+              background-color var(--mid) var(--ease), box-shadow var(--mid) var(--ease);
+}
+.jur-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(77, 225, 242, 0.42);
+  background: var(--glass-hi);
+  box-shadow: 0 16px 34px -22px rgba(0, 0, 0, 0.9);
+}
+.jur-card.is-selected {
+  border-color: var(--cyan);
+  background: rgba(77, 225, 242, 0.075);
+}
+.jur-card__code { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.14em; color: var(--cyan); }
+.jur-card__name { font-size: 0.95rem; font-weight: 500; }
+.jur-card__inst { font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+
+
+/* 12  ETHICS CARDS
+   ========================================================================== */
+.ethics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(285px, 1fr));
+  gap: 1rem;
+}
+.ecard {
+  position: relative;
+  padding: 1.5rem 1.45rem 1.6rem;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform var(--mid) var(--ease), border-color var(--mid) var(--ease), box-shadow var(--mid) var(--ease);
+}
+/* Pointer-tracked highlight; --mx/--my are set in main.js */
+.ecard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(16rem 16rem at var(--mx, 50%) var(--my, 0%), rgba(77, 225, 242, 0.11), transparent 70%);
+  opacity: 0;
+  transition: opacity var(--mid) var(--ease);
+  pointer-events: none;
+}
+.ecard:hover { transform: translateY(-4px); border-color: rgba(167, 139, 250, 0.4); box-shadow: 0 22px 44px -28px rgba(0, 0, 0, 0.95); }
+.ecard:hover::before { opacity: 1; }
+
+.ecard__icon {
+  width: 40px; height: 40px;
+  margin-bottom: 1.1rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: rgba(5, 7, 14, 0.5);
+  color: var(--cyan);
+  transition: color var(--mid) var(--ease), border-color var(--mid) var(--ease), transform var(--mid) var(--ease);
+}
+.ecard__icon svg { width: 19px; height: 19px; }
+.ecard:hover .ecard__icon { color: var(--violet); border-color: rgba(167, 139, 250, 0.5); transform: rotate(-6deg); }
+
+.ecard__num { position: absolute; top: 1.2rem; right: 1.3rem; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; color: var(--faint); }
+.ecard__title { margin: 0 0 0.6rem; font-size: 1.01rem; font-weight: 500; line-height: 1.3; }
+.ecard__body { margin: 0 0 1.1rem; font-size: 0.845rem; color: var(--muted); line-height: 1.58; }
+.ecard__fail {
+  margin: 0;
+  padding-top: 0.95rem;
+  border-top: 1px dashed var(--line-strong);
+  font-size: 0.805rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.ecard__fail b {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 0.35rem;
+}
+
+
+/* 13  TIMELINE, COMPARISON, PRINCIPLES
+   ========================================================================== */
+.timeline-wrap { position: relative; }
+.timeline { list-style: none; margin: 0; padding: 0 0 0 clamp(1.6rem, 4vw, 3rem); }
+.timeline__spine {
+  position: absolute;
+  top: 6px; bottom: 6px;
+  left: clamp(0.35rem, 1.1vw, 0.72rem);
+  width: 1px;
+  background: var(--line);
+}
+.timeline__spine span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--cyan), var(--azure) 50%, var(--violet));
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  will-change: transform;
+}
+
+.tl-item { position: relative; padding: 0 0 clamp(1.9rem, 3.5vw, 2.6rem); }
+.tl-item:last-child { padding-bottom: 0; }
+.tl-item__dot {
+  position: absolute;
+  top: 0.42rem;
+  left: calc(-1 * clamp(1.6rem, 4vw, 3rem) + clamp(0.35rem, 1.1vw, 0.72rem) - 3.5px);
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--ink-900);
+  border: 1px solid var(--line-strong);
+  transition: background-color var(--mid) var(--ease), border-color var(--mid) var(--ease), box-shadow var(--mid) var(--ease);
+}
+.tl-item.is-visible .tl-item__dot { background: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 0 4px rgba(77, 225, 242, 0.13); }
+.tl-item[data-future="true"].is-visible .tl-item__dot { background: var(--ink-900); border-color: var(--amber); box-shadow: 0 0 0 4px rgba(255, 179, 92, 0.12); }
+
+.tl-item__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.75rem; margin-bottom: 0.4rem; }
+.tl-item__date { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); }
+.tl-item[data-future="true"] .tl-item__date { color: var(--amber); }
+.tl-item__who { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+.tl-item__title { margin: 0 0 0.4rem; font-size: 1.02rem; font-weight: 500; line-height: 1.35; }
+.tl-item__body { margin: 0; font-size: 0.865rem; color: var(--muted); line-height: 1.6; max-width: 46em; }
+
+/* Comparison cards */
+.compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 1rem; }
+.ccard {
+  padding: 1.4rem 1.35rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(170deg, rgba(150, 175, 230, 0.06), transparent 70%);
+  display: grid;
+  gap: 0.85rem;
+  align-content: start;
+  transition: transform var(--mid) var(--ease), border-color var(--mid) var(--ease);
+}
+.ccard:hover { transform: translateY(-3px); border-color: var(--line-strong); }
+.ccard__head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+.ccard__flag { font-family: var(--mono); font-size: 0.63rem; letter-spacing: 0.14em; color: var(--cyan); }
+.ccard__dial { display: flex; gap: 3px; }
+.ccard__dial i { width: 14px; height: 3px; border-radius: 2px; background: var(--line-strong); }
+.ccard__dial i.on { background: linear-gradient(90deg, var(--cyan), var(--violet)); }
+.ccard__title { margin: 0; font-family: var(--display); font-size: 1.2rem; font-weight: 400; letter-spacing: -0.01em; }
+.ccard__mech { margin: 0; font-size: 0.845rem; color: var(--muted); line-height: 1.55; }
+.ccard__rows { list-style: none; margin: 0; padding: 0.9rem 0 0; border-top: 1px solid var(--line); display: grid; gap: 0.55rem; }
+.ccard__rows li { display: grid; grid-template-columns: 4.6rem 1fr; gap: 0.7rem; font-size: 0.795rem; align-items: baseline; }
+.ccard__rows span:first-child { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+.ccard__rows span:last-child { color: var(--paper); line-height: 1.45; }
+
+/* Shared principles */
+.principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1px; background: var(--line); border-radius: var(--radius); overflow: hidden; }
+.pcard { padding: 1.35rem 1.3rem; background: rgba(10, 14, 28, 0.6); transition: background-color var(--fast) var(--ease); }
+.pcard:hover { background: rgba(17, 23, 41, 0.9); }
+.pcard__k { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--violet); margin: 0 0 0.55rem; }
+.pcard__t { margin: 0 0 0.45rem; font-size: 0.95rem; font-weight: 500; }
+.pcard__d { margin: 0; font-size: 0.81rem; color: var(--muted); line-height: 1.55; }
+
+
+/* 14  OUTLOOK LEDGER
+   ========================================================================== */
+.ledger { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: clamp(1.5rem, 4vw, 3.5rem); }
+.ledger__head {
+  display: flex; align-items: baseline; gap: 0.7rem;
+  margin: 0 0 1.3rem; padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line-strong);
+  font-family: var(--display); font-size: 1.15rem; font-weight: 400; letter-spacing: -0.01em;
+}
+.ledger__head .mono { color: var(--amber); }
+.ledger__head--good .mono { color: var(--cyan); }
+.ledger__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.2rem; }
+.ledger__list li {
+  padding: 0.95rem 0.9rem 0.95rem 1.05rem;
+  border-left: 2px solid var(--line);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  transition: border-color var(--mid) var(--ease), background-color var(--mid) var(--ease), transform var(--mid) var(--ease);
+}
+.ledger__list li:hover { background: var(--glass); transform: translateX(4px); }
+#risks li:hover { border-left-color: var(--amber); }
+#opps li:hover { border-left-color: var(--cyan); }
+.ledger__list strong { display: block; font-size: 0.93rem; font-weight: 500; margin-bottom: 0.3rem; }
+.ledger__list p { margin: 0; font-size: 0.83rem; color: var(--muted); line-height: 1.55; }
+
+
+/* 15  RESOURCES
+   ========================================================================== */
+.resources { display: grid; grid-template-columns: repeat(auto-fit, minmax(275px, 1fr)); gap: 1rem; }
+.rgroup { padding: 1.4rem 1.35rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--glass); }
+.rgroup__title {
+  margin: 0 0 1.1rem; padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono); font-size: 0.63rem; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--cyan);
+}
+.rgroup__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
+.rlink {
+  display: grid; gap: 0.2rem;
+  padding: 0.7rem 0.6rem;
+  margin-inline: -0.6rem;
+  border-radius: var(--radius-sm);
+  color: var(--paper);
+  transition: background-color var(--fast) var(--ease);
+}
+.rlink:hover { background: var(--glass-hi); }
+.rlink__t { font-size: 0.885rem; font-weight: 400; line-height: 1.4; display: flex; align-items: baseline; gap: 0.4rem; }
+.rlink__t svg { width: 11px; height: 11px; flex: 0 0 auto; opacity: 0; transform: translate(-3px, 2px); transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease); }
+.rlink:hover .rlink__t svg { opacity: 0.8; transform: translate(0, 2px); }
+.rlink__m { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
+
+
+/* 16  ACCORDION
+   ========================================================================== */
+.accordion { display: grid; gap: 0.15rem; }
+.acc {
+  border-bottom: 1px solid var(--line);
+  transition: background-color var(--mid) var(--ease);
+}
+.acc__h { margin: 0; }
+.acc__btn {
+  width: 100%;
+  display: flex; align-items: center; gap: 1.1rem;
+  padding: 1.25rem 0.5rem 1.25rem 0;
+  background: none; border: 0;
+  text-align: left; cursor: pointer;
+  font-size: 1rem; font-weight: 400; line-height: 1.4;
+  color: var(--paper);
+  transition: color var(--fast) var(--ease);
+}
+.acc__btn:hover { color: var(--cyan); }
+.acc__q { flex: 1; }
+.acc__sign { position: relative; width: 13px; height: 13px; flex: 0 0 auto; }
+.acc__sign::before, .acc__sign::after {
+  content: "";
+  position: absolute; top: 50%; left: 0;
+  width: 13px; height: 1.5px;
+  background: var(--cyan);
+  border-radius: 2px;
+  transform: translateY(-50%);
+  transition: transform var(--mid) var(--ease), opacity var(--fast) linear;
+}
+.acc__sign::after { transform: translateY(-50%) rotate(90deg); }
+.acc__btn[aria-expanded="true"] .acc__sign::after { transform: translateY(-50%) rotate(0deg); opacity: 0; }
+.acc__panel { overflow: hidden; height: 0; transition: height var(--mid) var(--ease-io); }
+.acc__inner { padding: 0 3rem 1.5rem 0; }
+.acc__inner p { margin: 0 0 0.85rem; font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+.acc__inner p:last-child { margin-bottom: 0; }
+.acc__inner .mono { color: var(--paper); font-size: 0.68rem; }
+
+
+/* 17  CONTACT FORM AND FOOTER
+   ========================================================================== */
+.cta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.86fr);
+  gap: clamp(2rem, 4vw, 4rem);
+  padding: clamp(1.8rem, 4vw, 3.2rem);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(150deg, rgba(91, 140, 255, 0.1), rgba(167, 139, 250, 0.06) 45%, rgba(150, 175, 230, 0.03));
+}
+.cta__copy .h2 { margin-bottom: 1rem; }
+.cta__copy p { margin: 0 0 1.4rem; color: var(--muted); max-width: 32em; }
+.cta__points { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; }
+.cta__points li { position: relative; padding-left: 1.4rem; font-size: 0.875rem; color: var(--paper); }
+.cta__points li::before {
+  content: "";
+  position: absolute; left: 0; top: 0.62em;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+}
+
+.form { display: grid; gap: 0.95rem; align-content: start; }
+.field { display: grid; gap: 0.35rem; }
+.field label {
+  font-family: var(--mono); font-size: 0.62rem; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+}
+.field__opt { text-transform: none; letter-spacing: 0.04em; color: var(--faint); }
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  color: var(--paper);
+  background: rgba(5, 7, 14, 0.55);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--fast) var(--ease), background-color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+}
+.field textarea { resize: vertical; min-height: 96px; line-height: 1.55; }
+.field select { appearance: none; cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+.field input:hover, .field textarea:hover, .field select:hover { border-color: var(--line-strong); }
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: none;
+  border-color: var(--cyan);
+  background: rgba(5, 7, 14, 0.8);
+  box-shadow: 0 0 0 3px rgba(77, 225, 242, 0.13);
+}
+.field.has-error input, .field.has-error textarea { border-color: #FF8A8A; }
+.field__error { margin: 0; min-height: 0; font-size: 0.75rem; color: #FFA5A5; }
+.form__status { margin: 0.3rem 0 0; font-size: 0.82rem; color: var(--muted); min-height: 1.2em; }
+.form__status.is-ok { color: var(--cyan); }
+
+.footer {
+  position: relative;
+  z-index: 1;
+  padding-block: clamp(3rem, 6vw, 4.5rem) 2rem;
+  border-top: 1px solid var(--line);
+  background: rgba(5, 7, 14, 0.6);
+}
+.footer__inner { display: grid; gap: 2.5rem; }
+.footer__word {
+  margin: 0 0 0.7rem;
+  font-family: var(--display);
+  font-size: clamp(2.4rem, 8vw, 4.6rem);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  background: linear-gradient(100deg, var(--paper), rgba(150, 175, 230, 0.35));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.footer__note { margin: 0; max-width: 40em; font-size: 0.82rem; color: var(--faint); line-height: 1.6; }
+.footer__cols { display: flex; flex-wrap: wrap; gap: clamp(2rem, 6vw, 5rem); }
+.footer__cols h3 { margin: 0 0 0.85rem; color: var(--faint); font-weight: 500; }
+.footer__cols ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.footer__cols a { font-size: 0.85rem; color: var(--muted); transition: color var(--fast) var(--ease); }
+.footer__cols a:hover { color: var(--cyan); }
+.footer__legal {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem;
+  margin: 0; padding-top: 1.6rem;
+  border-top: 1px solid var(--line);
+  color: var(--faint); font-size: 0.6rem;
+}
+
+
+/* 18  BACK TO TOP
+   ========================================================================== */
+.to-top {
+  position: fixed;
+  right: clamp(1rem, 2.5vw, 2rem);
+  bottom: clamp(1rem, 2.5vw, 2rem);
+  z-index: 90;
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: rgba(10, 14, 28, 0.8);
+  backdrop-filter: blur(12px);
+  color: var(--paper);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(14px) scale(0.9);
+  pointer-events: none;
+  transition: opacity var(--mid) var(--ease), transform var(--mid) var(--ease),
+              border-color var(--fast) var(--ease), background-color var(--fast) var(--ease);
+}
+.to-top.is-on { opacity: 1; transform: none; pointer-events: auto; }
+.to-top:hover { border-color: var(--cyan); background: rgba(77, 225, 242, 0.13); }
+.to-top svg { width: 16px; height: 16px; }
+
+
+/* 19  REVEAL ANIMATIONS
+   Elements marked data-reveal start displaced; main.js adds .is-visible when
+   they enter the viewport. data-reveal-delay staggers siblings.
+   ========================================================================== */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 760ms var(--ease), transform 760ms var(--ease);
+  transition-delay: calc(var(--rd, 0) * 90ms);
+}
+[data-reveal].is-visible { opacity: 1; transform: none; }
+
+.tl-item { opacity: 0; transform: translateY(18px); transition: opacity 640ms var(--ease), transform 640ms var(--ease); }
+.tl-item.is-visible { opacity: 1; transform: none; }
+
+/* Cards animate in with a slight scale so grids feel deliberate, not springy */
+.stat, .ecard, .ccard, .pcard, .jur-card, .rgroup {
+  opacity: 0;
+  transform: translateY(18px) scale(0.985);
+  transition: opacity 620ms var(--ease), transform 620ms var(--ease),
+              background-color var(--mid) var(--ease), border-color var(--mid) var(--ease),
+              box-shadow var(--mid) var(--ease);
+  transition-delay: calc(var(--rd, 0) * 70ms);
+}
+.stat.is-visible, .ecard.is-visible, .ccard.is-visible,
+.pcard.is-visible, .jur-card.is-visible, .rgroup.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+
+/* 20  RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1080px) {
+  .hero__grid { grid-template-columns: 1fr; gap: 2.8rem; }
+  .horizon { order: 2; }
+  .atlas { grid-template-columns: 1fr; }
+  .split { grid-template-columns: 1fr; }
+  .cta { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 900px) {
+  html { scroll-padding-top: 78px; }
+  .menu-toggle { display: grid; }
+
+  /* Slide-in panel */
+  .nav {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: min(85vw, 330px);
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 5rem 1.8rem 2rem;
+    background: rgba(7, 10, 20, 0.96);
+    backdrop-filter: blur(22px);
+    border-left: 1px solid var(--line);
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 420ms var(--ease), visibility 420ms;
+  }
+  .nav.is-open { transform: none; visibility: visible; }
+  .nav__list { flex-direction: column; align-items: stretch; gap: 0.15rem; }
+  .nav__list a { padding: 0.85rem 0.75rem; font-size: 1.02rem; }
+  .nav__list a::after { display: none; }
+  .nav__list a.is-active { background: rgba(77, 225, 242, 0.1); color: var(--cyan); }
+  .nav__cta { justify-content: center; }
+  .brand__text span { display: none; }
+}
+
+@media (max-width: 620px) {
+  :root { --band-y: clamp(3.5rem, 9vh, 5rem); }
+  .hero { min-height: auto; }
+  .hero__facts { gap: 1.3rem 2rem; }
+  .hero__facts dd { font-size: 1.5rem; }
+  .hero__scroll { display: none; }
+  .horizon__item { grid-template-columns: 4.9rem 1fr; }
+  .horizon__flag { grid-column: 2; justify-self: start; margin-top: 0.2rem; }
+  .acc__inner { padding-right: 1rem; }
+  .jp__rows li { grid-template-columns: 1fr; gap: 0.15rem; }
+  .footer__legal { flex-direction: column; gap: 0.4rem; }
+  .btn { width: 100%; justify-content: center; }
+  .hero__actions { flex-direction: column; }
+}
+
+
+/* 21  REDUCED MOTION, FORCED COLOURS, PRINT
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Nothing may stay hidden if its reveal transition is disabled */
+  [data-reveal], .tl-item, .stat, .ecard, .ccard, .pcard, .jur-card, .rgroup {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .cursor-glow, .field { display: none; }
+  .timeline__spine span { transform: scaleY(1); }
+}
+
+@media (forced-colors: active) {
+  .glass, .stat, .ecard, .ccard, .jur-card, .rgroup, .horizon { border: 1px solid CanvasText; }
+  .btn { border: 1px solid ButtonText; }
+}
+
+@media print {
+  .masthead, .to-top, .loader, .cursor-glow, .field, .hero__scroll, .form { display: none !important; }
+  body { background: #fff; color: #000; }
+  body::before { display: none; }
+  .band { padding-block: 1.5rem; }
+  .h2, .hero__title, .footer__word { color: #000 !important; -webkit-text-fill-color: #000; }
+  .acc__panel { height: auto !important; }
+  a::after { content: " (" attr(href) ")"; font-size: 0.7em; word-break: break-all; }
+}
+
+</style>
+
+<!-- Structured data: helps search engines parse the organisation and the FAQ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Meridian Health AI Governance Observatory",
+  "url": "https://example.org/",
+  "description": "Reference resource on the regulation, ethics and governance of artificial intelligence in health care."
+}
+</script>
+</head>
+
+<body>
+
+<!-- Keyboard users land here first -->
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ==========================================================================
+     LOADING SEQUENCE
+     Removed on window load; a timeout in main.js guarantees it never traps
+     the reader if a font or the canvas is slow.
+     ========================================================================== -->
+<div class="loader" id="loader" role="status" aria-live="polite">
+  <div class="loader__inner">
+    <svg class="loader__mark" viewBox="0 0 48 48" aria-hidden="true">
+      <circle class="loader__ring" cx="24" cy="24" r="18" fill="none" stroke-width="1"></circle>
+      <path class="loader__arc" d="M24 6a18 18 0 0 1 0 36" fill="none" stroke-width="1.5" stroke-linecap="round"></path>
+      <circle class="loader__dot" cx="24" cy="6" r="2.5"></circle>
+    </svg>
+    <p class="loader__label">Loading the register</p>
+  </div>
+</div>
+
+<!-- Ambient pointer light. Hidden for touch input and reduced-motion readers. -->
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
+<!-- Neural-network field. Sits behind the hero only, so it costs nothing
+     once the reader scrolls past it (the loop is paused by IntersectionObserver). -->
+<canvas class="field" id="field" aria-hidden="true"></canvas>
+
+<!-- ==========================================================================
+     NAVIGATION
+     ========================================================================== -->
+<header class="masthead" id="masthead">
+  <div class="masthead__inner">
+
+    <a class="brand" href="#hero" aria-label="Meridian, home">
+      <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+        <defs>
+          <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#4DE1F2"></stop>
+            <stop offset="1" stop-color="#A78BFA"></stop>
+          </linearGradient>
+        </defs>
+        <circle cx="16" cy="16" r="12.5" fill="none" stroke="url(#brandGrad)" stroke-width="1.1" opacity=".55"></circle>
+        <ellipse cx="16" cy="16" rx="5.5" ry="12.5" fill="none" stroke="url(#brandGrad)" stroke-width="1.1"></ellipse>
+        <line x1="3.5" y1="16" x2="28.5" y2="16" stroke="url(#brandGrad)" stroke-width="1.1" opacity=".55"></line>
+        <circle cx="16" cy="8" r="2.1" fill="#4DE1F2"></circle>
+      </svg>
+      <span class="brand__text">
+        <strong>Meridian</strong>
+        <span>Health AI Governance Observatory</span>
+      </span>
+    </a>
+
+    <nav class="nav" id="primaryNav" aria-label="Sections">
+      <ul class="nav__list">
+        <li><a href="#about">Baseline</a></li>
+        <li><a href="#jurisdictions">Jurisdictions</a></li>
+        <li><a href="#ethics">Ethics</a></li>
+        <li><a href="#frameworks">Frameworks</a></li>
+        <li><a href="#outlook">Outlook</a></li>
+        <li><a href="#resources">Sources</a></li>
+        <li><a href="#faq">Questions</a></li>
+      </ul>
+      <a class="btn btn--ghost nav__cta" href="#contact">Get in touch</a>
+    </nav>
+
+    <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="primaryNav">
+      <span class="menu-toggle__bars" aria-hidden="true"><i></i><i></i></span>
+      <span class="sr-only">Open menu</span>
+    </button>
+  </div>
+  <!-- Reading-progress hairline -->
+  <div class="masthead__progress" id="readProgress" aria-hidden="true"></div>
+</header>
+
+<main id="main">
+
+<!-- ==========================================================================
+     1. HERO — thesis + the signature instrument (Regulatory Horizon)
+     ========================================================================== -->
+<section class="hero" id="hero">
+  <div class="shell hero__grid">
+
+    <div class="hero__copy">
+      <p class="eyebrow" data-reveal>
+        <span class="pulse" aria-hidden="true"></span>
+        Register updated <time datetime="2026-08-03">3 August 2026</time>
+      </p>
+
+      <h1 class="hero__title" data-reveal data-reveal-delay="1">
+        <span class="line">Nine jurisdictions.</span>
+        <span class="line">Four clocks.</span>
+        <span class="line line--accent">One patient in front of you.</span>
+      </h1>
+
+      <p class="lede" data-reveal data-reveal-delay="2">
+        Clinical AI is now governed by medical-device law, horizontal AI statutes, privacy
+        regimes, professional-college standards and payer rules at once — each with its own
+        scope, vocabulary and deadline. Meridian tracks what actually binds, when it binds,
+        and where the primary text lives.
+      </p>
+
+      <div class="hero__actions" data-reveal data-reveal-delay="3">
+        <a class="btn btn--primary" href="#jurisdictions">
+          Open the jurisdiction map
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn--quiet" href="#frameworks">See what changes next</a>
+      </div>
+
+      <dl class="hero__facts" data-reveal data-reveal-delay="4">
+        <div>
+          <dt>Devices authorised, US</dt>
+          <dd><span data-count="1451">0</span></dd>
+        </div>
+        <div>
+          <dt>Of those, radiology</dt>
+          <dd><span data-count="76">0</span><span class="unit">%</span></dd>
+        </div>
+        <div>
+          <dt>Powered by an LLM</dt>
+          <dd><span data-count="0">0</span></dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- ---------------------------------------------------------------------
+         SIGNATURE ELEMENT — REGULATORY HORIZON
+         A live instrument. Milestone dates are real and the "today" marker,
+         day counts and past/future states are computed from the clock in
+         js/main.js, so the panel stays correct after this page is published.
+         --------------------------------------------------------------------- -->
+    <aside class="horizon" id="horizon" data-reveal data-reveal-delay="2" aria-labelledby="horizonTitle">
+      <header class="horizon__head">
+        <h2 class="horizon__title" id="horizonTitle">Regulatory horizon</h2>
+        <p class="horizon__sub">EU AI Act, as amended by the Digital Omnibus on AI</p>
+      </header>
+
+      <div class="horizon__next" id="horizonNext">
+        <span class="horizon__nextLabel">Next binding date</span>
+        <strong class="horizon__nextValue">—</strong>
+        <span class="horizon__nextMeta"></span>
+      </div>
+
+      <!-- Axis is drawn by JS from the dataset in js/data.js -->
+      <div class="horizon__axis" id="horizonAxis"></div>
+
+      <ol class="horizon__list" id="horizonList"></ol>
+
+      <p class="horizon__foot">
+        Dates as adopted June 2026. Medical-device AI sits in <span class="mono">Annex&nbsp;I</span> —
+        the last clock to run out.
+      </p>
+    </aside>
+
+  </div>
+
+  <a class="hero__scroll" href="#about" aria-label="Scroll to the baseline section">
+    <span class="mono">scroll</span>
+    <span class="hero__scrollLine" aria-hidden="true"></span>
+  </a>
+</section>
+
+<!-- ==========================================================================
+     2. ABOUT — the evidence baseline
+     ========================================================================== -->
+<section class="band" id="about" aria-labelledby="aboutTitle">
+  <div class="shell">
+    <div class="section-head">
+      <p class="mono label" data-reveal>Baseline</p>
+      <h2 class="h2" id="aboutTitle" data-reveal data-reveal-delay="1">
+        Deployment ran ahead of the evidence, and the evidence ran ahead of the rules.
+      </h2>
+      <p class="section-head__lede" data-reveal data-reveal-delay="2">
+        Health care did not wait for a governance consensus. Reading the authorisation record
+        tells you more about where the risk actually sits than any strategy document.
+      </p>
+    </div>
+
+    <div class="stat-row">
+      <article class="stat" data-reveal>
+        <p class="stat__value"><span data-count="1451">0</span></p>
+        <h3 class="stat__label">AI-enabled devices authorised in the US</h3>
+        <p class="stat__note">Cumulative on the FDA’s list from 1995 to the end of December 2025. The agency is explicit that the list is a term-based sample, not a complete inventory.</p>
+      </article>
+      <article class="stat" data-reveal data-reveal-delay="1">
+        <p class="stat__value"><span data-count="1104">0</span><span class="unit">/1451</span></p>
+        <h3 class="stat__label">Concentrated in radiology</h3>
+        <p class="stat__note">Around 76% of authorisations sit in one specialty. Cardiology follows at roughly 9%. Most clinical disciplines have almost no authorised tools at all.</p>
+      </article>
+      <article class="stat" data-reveal data-reveal-delay="2">
+        <p class="stat__value"><span data-count="0">0</span></p>
+        <h3 class="stat__label">Authorised devices powered by an LLM</h3>
+        <p class="stat__note">As of March 2026 no FDA-authorised device is powered by a large language model — while generative tools are already in clinical workflows as unregulated documentation and messaging aids.</p>
+      </article>
+      <article class="stat" data-reveal data-reveal-delay="3">
+        <p class="stat__value">&lt;<span data-count="2">0</span><span class="unit">%</span></p>
+        <h3 class="stat__label">Carry an authorised change-control plan</h3>
+        <p class="stat__note">Predetermined Change Control Plans are the mechanism for legal model updates. Roughly 26 devices had one as of May 2025 — the rest must re-submit to retrain.</p>
+      </article>
+    </div>
+
+    <div class="split" data-reveal>
+      <div class="split__body">
+        <h3 class="h3">The gap that governance has to close</h3>
+        <p>
+          The authorisation record describes <em>image-analysis software cleared once and frozen</em>.
+          The tools spreading fastest through hospitals are something else: ambient scribes,
+          inbox drafters, triage chatbots, coding assistants and prior-authorisation engines —
+          general-purpose models applied to clinical work, often outside the medical-device
+          definition altogether, and updated by a vendor without notice.
+        </p>
+        <p>
+          That is the live governance problem. Not whether AI belongs in medicine, but who is
+          accountable when a model that was never reviewed as a device quietly changes the
+          standard of care.
+        </p>
+      </div>
+      <ul class="split__list">
+        <li>
+          <span class="mono">01</span>
+          <div><strong>Device or not a device</strong><p>Intended purpose decides. The same model can be a Class II device in one configuration and unregulated software in another.</p></div>
+        </li>
+        <li>
+          <span class="mono">02</span>
+          <div><strong>Frozen or adaptive</strong><p>Traditional device law assumed a fixed artefact. Models retrain. Change-control plans are the bridge, and they remain rare.</p></div>
+        </li>
+        <li>
+          <span class="mono">03</span>
+          <div><strong>Approved or actually working</strong><p>Market authorisation is a point-in-time judgement. Performance drifts with the population, the scanner and the workflow.</p></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     3. JURISDICTIONS — interactive map + expandable region detail
+     ========================================================================== -->
+<section class="band band--alt" id="jurisdictions" aria-labelledby="jurTitle">
+  <div class="shell">
+    <div class="section-head">
+      <p class="mono label" data-reveal>Jurisdictions · 9</p>
+      <h2 class="h2" id="jurTitle" data-reveal data-reveal-delay="1">
+        Nobody is regulating the same object.
+      </h2>
+      <p class="section-head__lede" data-reveal data-reveal-delay="2">
+        Some jurisdictions regulate the software. Some regulate the decision. Some regulate the
+        data and leave the software alone. Select a marker to read what binds there.
+      </p>
+    </div>
+
+    <div class="atlas" data-reveal>
+      <!-- Dot-matrix map. Land grid and marker positions are generated in
+           js/main.js from real latitude/longitude, so markers stay accurate. -->
+      <figure class="atlas__map">
+        <svg id="worldMap" viewBox="0 0 720 330" role="group" aria-label="World map with nine governance markers">
+          <defs>
+            <radialGradient id="pinGlow">
+              <stop offset="0" stop-color="#4DE1F2" stop-opacity=".55"></stop>
+              <stop offset="1" stop-color="#4DE1F2" stop-opacity="0"></stop>
+            </radialGradient>
+          </defs>
+          <g id="mapLand"></g>
+          <g id="mapPins"></g>
+        </svg>
+        <figcaption class="mono atlas__caption">Marker positions are geographic; the grid is a 5° dot matrix.</figcaption>
+      </figure>
+
+      <!-- Detail panel, updated by the map and by the cards below -->
+      <div class="atlas__panel glass" id="jurPanel" aria-live="polite">
+        <!-- populated by main.js -->
+      </div>
+    </div>
+
+    <!-- The cards are the accessible control surface; the pins mirror them. -->
+    <div class="jur-cards" id="jurCards"></div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     4. ETHICS — WHO's six consensus principles, each with a real failure mode
+     ========================================================================== -->
+<section class="band" id="ethics" aria-labelledby="ethicsTitle">
+  <div class="shell">
+    <div class="section-head">
+      <p class="mono label" data-reveal>WHO · six consensus principles</p>
+      <h2 class="h2" id="ethicsTitle" data-reveal data-reveal-delay="1">
+        Ethics only becomes governance when a principle names something that can fail.
+      </h2>
+      <p class="section-head__lede" data-reveal data-reveal-delay="2">
+        The six principles below are from the WHO guidance on ethics and governance of AI for
+        health. Each card pairs the principle with the failure it exists to prevent, and the
+        control that catches it.
+      </p>
+    </div>
+
+    <div class="ethics-grid" id="ethicsGrid"></div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     5. FRAMEWORKS — timeline, comparison, shared principles
+     ========================================================================== -->
+<section class="band band--alt" id="frameworks" aria-labelledby="framesTitle">
+  <div class="shell">
+    <div class="section-head">
+      <p class="mono label" data-reveal>Timeline · 2019 – 2028</p>
+      <h2 class="h2" id="framesTitle" data-reveal data-reveal-delay="1">
+        Seven years from principles to penalties.
+      </h2>
+      <p class="section-head__lede" data-reveal data-reveal-delay="2">
+        The sequence matters: soft-law principles first, then sectoral guidance, then binding
+        statute — with the binding parts repeatedly rescheduled.
+      </p>
+    </div>
+
+    <!-- Vertical timeline; the spine draws itself as the section scrolls -->
+    <div class="timeline-wrap">
+      <div class="timeline__spine" aria-hidden="true"><span id="timelineFill"></span></div>
+      <ol class="timeline" id="timeline">
+        <!-- entries injected from js/data.js -->
+      </ol>
+    </div>
+
+    <h3 class="h3 subhead" data-reveal>Four regulatory postures, compared</h3>
+    <div class="compare" id="compare"></div>
+
+    <h3 class="h3 subhead" data-reveal>What every framework converges on</h3>
+    <div class="principles" id="principles"></div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     6. OUTLOOK — challenges and opportunities as a paired ledger
+     ========================================================================== -->
+<section class="band" id="outlook" aria-labelledby="outlookTitle">
+  <div class="shell">
+    <div class="section-head">
+      <p class="mono label" data-reveal>Failure modes / openings</p>
+      <h2 class="h2" id="outlookTitle" data-reveal data-reveal-delay="1">
+        The same properties make clinical AI risky and worth doing.
+      </h2>
+    </div>
+
+    <div class="ledger">
+      <div class="ledger__col" data-reveal>
+        <h3 class="ledger__head"><span class="mono">Risk</span> What goes wrong quietly</h3>
+        <ul class="ledger__list" id="risks"></ul>
+      </div>
+      <div class="ledger__col" data-reveal data-reveal-delay="1">
+        <h3 class="ledger__head ledger__head--good"><span class="mono">Opening</span> What good governance unlocks</h3>
+        <ul class="ledger__list" id="opps"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     7. RESOURCES — primary sources only
+     ========================================================================== -->
+<section class="band band--alt" id="resources" aria-labelledby="resTitle">
+  <div class="shell">
+    <div class="section-head">
+      <p class="mono label" data-reveal>Primary sources</p>
+      <h2 class="h2" id="resTitle" data-reveal data-reveal-delay="1">Read the text, not the summary.</h2>
+      <p class="section-head__lede" data-reveal data-reveal-delay="2">
+        Secondary commentary on AI regulation goes stale within weeks. These are the issuing
+        bodies and the instruments themselves.
+      </p>
+    </div>
+    <div class="resources" id="resources-grid"></div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     8. FAQ — accordion
+     ========================================================================== -->
+<section class="band" id="faq" aria-labelledby="faqTitle">
+  <div class="shell shell--narrow">
+    <div class="section-head">
+      <p class="mono label" data-reveal>Common questions</p>
+      <h2 class="h2" id="faqTitle" data-reveal data-reveal-delay="1">Questions we are asked most</h2>
+    </div>
+    <div class="accordion" id="accordion"></div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     9. CONTACT / CALL TO ACTION
+     ========================================================================== -->
+<section class="band band--cta" id="contact" aria-labelledby="contactTitle">
+  <div class="shell">
+    <div class="cta glass" data-reveal>
+      <div class="cta__copy">
+        <p class="mono label">Enquiries</p>
+        <h2 class="h2" id="contactTitle">Bring us a live decision.</h2>
+        <p>
+          Meridian works with health systems, regulators, research groups and ethics boards on
+          concrete questions: whether a tool is in scope, what evidence a committee should
+          demand, how to write a change-control plan a regulator will accept.
+        </p>
+        <ul class="cta__points">
+          <li>Scope and classification reviews</li>
+          <li>Governance committee design and terms of reference</li>
+          <li>Procurement and vendor evidence standards</li>
+          <li>Multi-jurisdiction deployment briefings</li>
+        </ul>
+      </div>
+
+      <!-- No backend is assumed. The handler validates, then hands the reader a
+           composed email. Point FORM_ENDPOINT in js/main.js at your own API to
+           post instead. -->
+      <form class="form" id="contactForm" novalidate>
+        <div class="field">
+          <label for="fName">Name</label>
+          <input id="fName" name="name" type="text" autocomplete="name" required>
+          <p class="field__error" data-error-for="fName"></p>
+        </div>
+        <div class="field">
+          <label for="fEmail">Email</label>
+          <input id="fEmail" name="email" type="email" autocomplete="email" required>
+          <p class="field__error" data-error-for="fEmail"></p>
+        </div>
+        <div class="field">
+          <label for="fOrg">Organisation <span class="field__opt">optional</span></label>
+          <input id="fOrg" name="org" type="text" autocomplete="organization">
+        </div>
+        <div class="field">
+          <label for="fTopic">What is the decision?</label>
+          <select id="fTopic" name="topic">
+            <option>Scope and classification</option>
+            <option>Governance committee design</option>
+            <option>Procurement and vendor evidence</option>
+            <option>Multi-jurisdiction deployment</option>
+            <option>Research collaboration</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fMsg">Details</label>
+          <textarea id="fMsg" name="message" rows="4" required></textarea>
+          <p class="field__error" data-error-for="fMsg"></p>
+        </div>
+        <button class="btn btn--primary btn--full" type="submit">
+          Send enquiry
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <p class="form__status" id="formStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ==========================================================================
+     FOOTER
+     ========================================================================== -->
+<footer class="footer">
+  <div class="shell footer__inner">
+    <div class="footer__brand">
+      <p class="footer__word">Meridian</p>
+      <p class="footer__note">
+        An independent reference on the governance of artificial intelligence in health care.
+        Nothing here is legal advice; verify every date against the issuing body before you rely on it.
+      </p>
+    </div>
+    <div class="footer__cols">
+      <div>
+        <h3 class="mono">Sections</h3>
+        <ul>
+          <li><a href="#about">Baseline</a></li>
+          <li><a href="#jurisdictions">Jurisdictions</a></li>
+          <li><a href="#ethics">Ethics</a></li>
+          <li><a href="#frameworks">Frameworks</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="mono">Reference</h3>
+        <ul>
+          <li><a href="#outlook">Outlook</a></li>
+          <li><a href="#resources">Primary sources</a></li>
+          <li><a href="#faq">Questions</a></li>
+          <li><a href="#contact">Enquiries</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="footer__legal mono">
+      <span>Register current to 3 August 2026</span>
+      <span>&copy; 2026 Meridian Observatory</span>
+    </p>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Back to top">
+  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M4 7l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<script>
+/* ==========================================================================
+   MERIDIAN — CONTENT DATA
+   --------------------------------------------------------------------------
+   Every piece of reference content on the page lives here so it can be
+   updated without touching behaviour. Dates are ISO strings; the page derives
+   past / next / future states from the clock at render time.
+
+   Currency note: content reflects the position as at 3 August 2026. Regulatory
+   dates move — verify against the issuing body before relying on any of it.
+   ========================================================================== */
+(function (global) {
+  'use strict';
+
+  /* ------------------------------------------------------------------------
+     1. REGULATORY HORIZON
+     EU AI Act milestones as amended by the Digital Omnibus on AI, adopted by
+     Parliament on 16 June 2026 and the Council on 29 June 2026.
+     ------------------------------------------------------------------------ */
+  const HORIZON = {
+    axisStart: '2024-08-01',
+    axisEnd: '2028-08-02',
+    milestones: [
+      {
+        date: '2024-08-01',
+        title: 'AI Act enters into force',
+        note: 'Regulation (EU) 2024/1689',
+        flag: 'In force'
+      },
+      {
+        date: '2025-02-02',
+        title: 'Prohibitions and AI-literacy duties apply',
+        note: 'Article 5 · Article 4',
+        flag: 'Applied'
+      },
+      {
+        date: '2025-08-02',
+        title: 'General-purpose AI model obligations apply',
+        note: 'Chapter V',
+        flag: 'Applied'
+      },
+      {
+        date: '2026-08-02',
+        title: 'Transparency duties apply',
+        note: 'Article 50 — chatbot disclosure, synthetic-media marking',
+        flag: 'Applied'
+      },
+      {
+        date: '2026-12-02',
+        title: 'Marking duties reach legacy systems',
+        note: 'Article 50(2) · new Article 5 prohibitions',
+        flag: 'Next'
+      },
+      {
+        date: '2027-08-02',
+        title: 'Member States must run an AI regulatory sandbox',
+        note: 'Article 57 · at least one per State',
+        flag: 'Scheduled'
+      },
+      {
+        date: '2027-12-02',
+        title: 'High-risk duties apply — Annex III',
+        note: 'Standalone systems · deferred 16 months',
+        flag: 'Scheduled'
+      },
+      {
+        date: '2028-08-02',
+        title: 'High-risk duties apply — Annex I',
+        note: 'AI embedded in regulated products, including medical devices',
+        flag: 'Scheduled'
+      }
+    ]
+  };
+
+  /* ------------------------------------------------------------------------
+     2. JURISDICTIONS
+     lat / lon are real; the map projects them, so markers cannot drift out of
+     sync with the text.
+     ------------------------------------------------------------------------ */
+  const JURISDICTIONS = [
+    {
+      id: 'eu',
+      code: 'EU',
+      name: 'European Union',
+      short: 'European Union',
+      instrument: 'AI Act, as amended by the Digital Omnibus',
+      posture: 'Horizontal statute',
+      lat: 50.85, lon: 4.35,
+      thesis: 'The only jurisdiction regulating AI as a product category in its own right. For clinical AI it layers on top of the medical-device regime rather than replacing it.',
+      rows: [
+        ['Regulator', 'European Commission AI Office, national market-surveillance authorities, and notified bodies under MDR / IVDR'],
+        ['Instrument', 'Regulation (EU) 2024/1689, amended by the Digital Omnibus on AI (adopted June 2026)'],
+        ['Clinical AI', 'Most AI inside a medical device is high-risk through Annex I, assessed alongside MDR / IVDR conformity — one device, two overlapping regimes'],
+        ['Applies now', 'Prohibitions and AI-literacy duties since February 2025; general-purpose model duties since August 2025; Article 50 transparency since 2 August 2026'],
+        ['Watch', 'Annex I high-risk duties moved to 2 August 2028; Annex III standalone systems to 2 December 2027'],
+        ['Exposure', 'Up to €35m or 7% of worldwide turnover for prohibited practices; €15m or 3% for high-risk and transparency breaches']
+      ],
+      link: 'https://eur-lex.europa.eu/eli/reg/2024/1689/oj',
+      linkLabel: 'Consolidated AI Act text, EUR-Lex'
+    },
+    {
+      id: 'us',
+      code: 'US',
+      name: 'United States',
+      short: 'United States',
+      instrument: 'FD&C Act, HIPAA, and 50 state legislatures',
+      posture: 'Sectoral, plus a state patchwork',
+      lat: 38.9, lon: -77.04,
+      thesis: 'No comprehensive federal AI statute. Device law governs the software, HIPAA governs the data, and the states govern the clinical decision — which is where the obligations are multiplying fastest.',
+      rows: [
+        ['Regulator', 'FDA (CDRH) for devices; HHS Office for Civil Rights for HIPAA; FTC for unfair or deceptive practices; state attorneys general'],
+        ['Instrument', 'Food, Drug, and Cosmetic Act via 510(k), De Novo and PMA pathways, with Predetermined Change Control Plans for bounded model updates'],
+        ['Federal posture', 'Executive Order 14365 (11 December 2025) directs a DOJ AI Litigation Task Force and a preemption push. A ten-year state moratorium was stripped from the 2025 budget bill 99–1'],
+        ['State layer', '43 states introduced more than 240 AI bills in the first months of 2026. California requires disclosure when generative AI drafts clinical communications; Illinois and Nevada bar AI-delivered therapy; Utah permits it with disclosure'],
+        ['Payer AI', 'CMS has set guardrails for Medicare Advantage prior authorisation, and several states now require human review of AI-driven denials'],
+        ['Watch', 'xAI v. Weiser, filed in the District of Colorado in April 2026, tests the preemption theory. Colorado’s replacement duties begin January 2027']
+      ],
+      link: 'https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-enabled-medical-device-list',
+      linkLabel: 'FDA AI-enabled medical device list'
+    },
+    {
+      id: 'ca',
+      code: 'CA',
+      name: 'Canada',
+      short: 'Canada',
+      instrument: 'Medical Devices Regulations and MLMD guidance',
+      posture: 'Device law and privacy, no AI statute',
+      lat: 45.42, lon: -75.7,
+      thesis: 'Canada tried a horizontal AI statute and abandoned it. Device regulation and privacy law now carry the whole load, with a decisive shift towards lifecycle oversight in 2026.',
+      rows: [
+        ['Regulator', 'Health Canada for devices; the Privacy Commissioner under PIPEDA; provincial commissioners and colleges for clinical practice'],
+        ['Instrument', 'Food and Drugs Act with the Medical Devices Regulations, plus Pre-market Guidance for Machine Learning-Enabled Medical Devices, published 1 April 2026'],
+        ['What changed', 'Machine learning must be declared explicitly. Class II–IV submissions are expected to evidence data quality, bias management, transparency and ongoing performance monitoring, with Predetermined Change Control Plans recognised'],
+        ['Also 2026', 'Expanded Terms and Conditions authority from 1 January 2026, published on the Regulatory Decision Summary page, and mandatory Regulatory Enrolment Process from 1 April 2026'],
+        ['The gap', 'The Artificial Intelligence and Data Act died on the Order Paper in January 2025 and will not be revived. PIPEDA and provincial health-privacy statutes such as Ontario’s PHIPA and Alberta’s HIA govern the data'],
+        ['Practice layer', 'Provincial colleges have begun issuing their own standards on AI in clinical practice, which bind physicians directly']
+      ],
+      link: 'https://www.canada.ca/en/health-canada/services/drugs-health-products/medical-devices/application-information/guidance-documents/pre-market-guidance-machine-learning-enabled-medical-devices.html',
+      linkLabel: 'Health Canada MLMD pre-market guidance'
+    },
+    {
+      id: 'uk',
+      code: 'UK',
+      name: 'United Kingdom',
+      short: 'United Kingdom',
+      instrument: 'UK MDR 2002 and the AI Airlock',
+      posture: 'Regulator-led, sandbox first',
+      lat: 51.5, lon: -0.13,
+      thesis: 'No AI Act. The UK is deliberately building evidence inside a sandbox before legislating, and exporting the results into international alignment work.',
+      rows: [
+        ['Regulator', 'MHRA for devices, with NICE on evaluation, CQC on providers, and NHS England on deployment'],
+        ['Instrument', 'UK Medical Devices Regulations 2002, reformed through the Software and AI as a Medical Device change programme'],
+        ['AI Airlock', 'A regulatory sandbox launched in May 2024 pairing developers, approved bodies and the NHS. Phase 2 ran to spring 2026 and focused on risk classification, change management, and bias and fairness metrics. A further £3.6m over three years was committed in April 2026'],
+        ['Watch', 'The National Commission into the Regulation of AI in Healthcare, chaired by Professor Alastair Denniston and launched on 26 September 2025, is due to report in 2026 and will shape the new framework'],
+        ['Alignment', 'The UK co-chairs IMDRF work on AI and machine learning, and an international reliance framework now aligns the MHRA with the FDA, Health Canada and the TGA'],
+        ['Shared principles', 'Good Machine Learning Practice, Predetermined Change Control Plans and transparency guidelines, developed jointly with the FDA and Health Canada']
+      ],
+      link: 'https://medregs.blog.gov.uk/',
+      linkLabel: 'MHRA MedRegs, regulatory commentary'
+    },
+    {
+      id: 'who',
+      code: 'WHO',
+      name: 'World Health Organization',
+      short: 'WHO · Geneva',
+      instrument: 'Ethics and governance guidance for health AI',
+      posture: 'Normative guidance',
+      lat: 46.22, lon: 6.14,
+      thesis: 'Not binding on anyone, and the most widely adopted text in the field. WHO supplies the vocabulary that national regulators, procurement teams and ethics boards actually argue in.',
+      rows: [
+        ['Instrument', 'Ethics and governance of artificial intelligence for health (2021), setting out six consensus principles'],
+        ['Generative AI', 'Guidance on large multi-modal models (January 2024) adds more than forty recommendations for governments, developers and providers, covering models already in clinical use'],
+        ['Global agenda', 'The 79th World Health Assembly, meeting 18–23 May 2026, took up harmonisation of regulatory approaches, governance and standards for data, digital health and AI in the health sector'],
+        ['Force', 'None directly. Its weight comes from adoption: the principles are cited in national guidance, ethics review, and procurement conditions'],
+        ['Equity focus', 'Explicit attention to the gap between where models are built and where they are deployed, and to the risk of exporting tools validated on unrepresentative populations']
+      ],
+      link: 'https://www.who.int/publications/i/item/9789240084759',
+      linkLabel: 'WHO guidance on large multi-modal models'
+    },
+    {
+      id: 'cn',
+      code: 'CN',
+      name: 'China',
+      short: 'China',
+      instrument: 'Generative AI measures, labelling rules, NMPA review',
+      posture: 'Prescriptive, at service level',
+      lat: 39.9, lon: 116.4,
+      thesis: 'Regulates the service and the content, not only the product. Filing, security assessment and labelling duties sit alongside device approval, and they arrived earlier than almost anywhere else.',
+      rows: [
+        ['Regulator', 'Cyberspace Administration of China for AI services; NMPA for medical devices; National Health Commission for clinical application'],
+        ['Instrument', 'Interim Measures for the Management of Generative AI Services, in force 15 August 2023, with labelling rules for AI-generated content from 1 September 2025'],
+        ['Devices', 'NMPA review guidance sets out expectations for AI-enabled medical device submissions, including algorithm updates'],
+        ['Distinctive', 'Algorithm filing and registration, security assessment before public release, and content-provenance duties are all separate obligations from device approval'],
+        ['Practical effect', 'Compliance is front-loaded into launch approval rather than post-market surveillance']
+      ],
+      link: 'https://www.nmpa.gov.cn/',
+      linkLabel: 'National Medical Products Administration'
+    },
+    {
+      id: 'in',
+      code: 'IN',
+      name: 'India',
+      short: 'India',
+      instrument: 'AI Governance Guidelines and the DPDP Act',
+      posture: 'Techno-legal, voluntary first',
+      lat: 28.61, lon: 77.21,
+      thesis: 'A deliberate decision not to legislate an AI Act. Principles and institutions first, with binding force borrowed from data-protection and intermediary law.',
+      rows: [
+        ['Instrument', 'India AI Governance Guidelines, released by MeitY on 5 November 2025 under the IndiaAI Mission: seven guiding principles, three new institutions, and a stated preference for sandboxes and self-certification over mandates'],
+        ['Health-specific', 'ICMR Ethical Guidelines for AI in Biomedical Research and Healthcare (2023) govern research use; CDSCO regulates devices'],
+        ['What binds', 'The Digital Personal Data Protection Act 2023 for personal data, and 2026 amendments to the intermediary rules requiring synthetically generated content to be labelled or carry provenance metadata'],
+        ['Institutions', 'An inter-ministerial AI Governance Group, a Technology and Policy Expert Committee, and an AI Safety Institute'],
+        ['Watch', 'Whether the voluntary layer hardens into statute, and how sector regulators use sandboxes for high-risk deployments']
+      ],
+      link: 'https://indiaai.gov.in/',
+      linkLabel: 'IndiaAI Mission'
+    },
+    {
+      id: 'au',
+      code: 'AUS',
+      name: 'Australia',
+      short: 'Australia',
+      instrument: 'Therapeutic Goods Act and voluntary standard',
+      posture: 'Existing law first, guardrails consulted',
+      lat: -35.28, lon: 149.13,
+      thesis: 'Technology-neutral by design: use the regulators you already have, and add statutory guardrails only where a real gap is demonstrated.',
+      rows: [
+        ['Regulator', 'Therapeutic Goods Administration for software as a medical device; OAIC for privacy'],
+        ['Instrument', 'Therapeutic Goods Act with the SaMD framework, alongside a Voluntary AI Safety Standard published in September 2024'],
+        ['Under consultation', 'Mandatory guardrails for AI in high-risk settings, covering testing, transparency, data governance, human oversight, accountability, incident reporting and conformity assessment'],
+        ['Open question', 'Whether guardrails are folded into existing sectoral law, coordinated across regulators, or given a standalone Act with a dedicated regulator'],
+        ['Capability', 'An Australian AI Safety Institute to provide independent technical analysis']
+      ],
+      link: 'https://www.tga.gov.au/',
+      linkLabel: 'Therapeutic Goods Administration'
+    },
+    {
+      id: 'au-cont',
+      code: 'AU',
+      name: 'African Union',
+      short: 'African Union',
+      instrument: 'Continental Artificial Intelligence Strategy',
+      posture: 'Continental strategy, capacity first',
+      lat: 9.03, lon: 38.74,
+      thesis: 'The governance question here is not conformity assessment. It is whether tools validated elsewhere work at all on the populations that carry the largest share of global disease burden.',
+      rows: [
+        ['Instrument', 'Continental Artificial Intelligence Strategy, adopted in July 2024, with national strategies at varying stages across member states'],
+        ['Emphasis', 'Capability, data infrastructure, skills and data sovereignty ahead of product conformity regimes'],
+        ['Reality', 'Most member states have no AI-specific device pathway, so imported tools arrive with the validation evidence of their country of origin'],
+        ['Why it matters', 'Models trained predominantly on high-income-country data are least reliable where they are most needed. Procurement conditions, not statutes, are where that gets fixed first'],
+        ['Leverage', 'Regional harmonisation and pooled procurement give smaller regulators evidentiary demands they could not make alone']
+      ],
+      link: 'https://au.int/',
+      linkLabel: 'African Union'
+    }
+  ];
+
+  /* ------------------------------------------------------------------------
+     3. ETHICS — the six WHO consensus principles, each paired with the
+     failure it exists to prevent and the control that catches it.
+     ------------------------------------------------------------------------ */
+  const ETHICS = [
+    {
+      icon: 'M8 3v6a4 4 0 0 0 8 0V3M12 13v8M8 21h8',
+      title: 'Protect human autonomy',
+      body: 'People keep control of clinical decisions and of their data. Delegation to a model is a choice a patient and clinician make knowingly, not a default set by procurement.',
+      fail: 'Consent collapses into a checkbox, and nobody tells the patient a model shaped the recommendation. The control is disclosure at the point of care and a human who can actually be reached.'
+    },
+    {
+      icon: 'M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z',
+      title: 'Promote well-being, safety and the public interest',
+      body: 'A tool has to improve outcomes for patients, not only throughput for the institution. Safety is a claim that has to keep being true after deployment.',
+      fail: 'Performance decays as the population, scanner or workflow shifts, and nobody is watching. The control is prospective monitoring against a performance floor agreed before go-live.'
+    },
+    {
+      icon: 'M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6zm10 2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+      title: 'Ensure transparency and intelligibility',
+      body: 'Enough published information for a clinician to know what the tool was built for, what it was validated on, and where it should not be trusted.',
+      fail: '“The model flagged it” enters the record with no version, inputs or confidence attached, so the decision cannot be reconstructed. The control is model documentation plus version logging in the health record.'
+    },
+    {
+      icon: 'M12 3l8 4v6c0 4.4-3.4 7.4-8 8-4.6-.6-8-3.6-8-8V7l8-4zm-2.2 9.2l1.9 1.9 3.6-3.9',
+      title: 'Foster responsibility and accountability',
+      body: 'Someone is answerable when the tool contributes to harm, and that person is identifiable before anything goes wrong rather than after.',
+      fail: 'Liability diffuses between vendor, health system and clinician until nobody owns the outcome. The control is a named accountable owner, contractual allocation of risk, and a real incident-reporting route.'
+    },
+    {
+      icon: 'M9 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm9 3a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM2 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5M17 20c0-2 .6-3.5 2-4.4',
+      title: 'Ensure inclusiveness and equity',
+      body: 'The tool works across the population that will actually be exposed to it — by age, sex, ethnicity, comorbidity, language and care setting.',
+      fail: 'Aggregate accuracy looks strong while performance quietly drops for the groups least represented in training data. The control is subgroup performance reporting, demanded as a condition of purchase.'
+    },
+    {
+      icon: 'M21 12a9 9 0 1 1-3.3-7M21 3v6h-6',
+      title: 'Promote responsive and sustainable AI',
+      body: 'Tools are monitored, updated, and retired deliberately. Systems and staff are resourced for the work the tool creates as well as the work it removes.',
+      fail: 'Pilots accumulate, none reach scale, and abandoned tools leave clinicians distrustful of the next one. The control is a decommissioning plan and honest total-cost accounting from the outset.'
+    }
+  ];
+
+  /* ------------------------------------------------------------------------
+     4. TIMELINE — soft law to binding statute, 2019 to 2028
+     ------------------------------------------------------------------------ */
+  const TIMELINE = [
+    { date: 'May 2019', who: 'OECD', title: 'AI Principles adopted', body: 'The first intergovernmental standard on AI, and the source of the vocabulary — human-centred, transparent, robust, accountable — that later instruments inherit. Updated in 2024.' },
+    { date: 'Jun 2021', who: 'WHO', title: 'Ethics and governance of AI for health', body: 'Six consensus principles for health AI, produced with a multidisciplinary expert group. Still the most cited normative reference in clinical AI governance.' },
+    { date: 'Nov 2021', who: 'UNESCO', title: 'Recommendation on the Ethics of AI', body: 'Adopted by all member states, extending ethical commitments into education, research and cultural policy alongside health.' },
+    { date: 'Jan 2023', who: 'NIST', title: 'AI Risk Management Framework 1.0', body: 'Govern, Map, Measure, Manage. Voluntary, and it became the operational spine of most enterprise AI risk programmes, including in health systems.' },
+    { date: 'Aug 2023', who: 'China', title: 'Generative AI measures take effect', body: 'The Interim Measures for the Management of Generative AI Services impose filing, security assessment and content duties on providers — well ahead of comparable rules elsewhere.' },
+    { date: 'Jan 2024', who: 'WHO', title: 'Guidance on large multi-modal models', body: 'More than forty recommendations addressing generative AI already circulating in clinical settings: diagnosis support, patient-facing symptom queries, clerical work, education and research.' },
+    { date: 'May 2024', who: 'MHRA', title: 'AI Airlock opens', body: 'A regulatory sandbox for AI as a medical device, pairing developers with approved bodies and the NHS to generate evidence rather than wait for it.' },
+    { date: 'Jul 2024', who: 'African Union', title: 'Continental AI Strategy adopted', body: 'A capacity-and-sovereignty framing of AI governance, aimed at building the conditions for safe adoption rather than only conditions for market entry.' },
+    { date: 'Aug 2024', who: 'EU', title: 'AI Act enters into force', body: 'The first comprehensive horizontal AI regulation, with obligations phased across four years and clinical AI captured largely through the medical-device annex.' },
+    { date: 'Sep 2024', who: 'Council of Europe', title: 'Framework Convention on AI opens for signature', body: 'The first binding international treaty on artificial intelligence, oriented to human rights, democracy and the rule of law.' },
+    { date: 'Feb 2025', who: 'EU', title: 'Prohibitions and AI-literacy duties apply', body: 'Unacceptable-risk practices become unlawful, and providers and deployers must ensure staff operating AI systems are sufficiently AI-literate.' },
+    { date: 'Aug 2025', who: 'EU', title: 'General-purpose AI model obligations apply', body: 'Documentation, copyright policy and systemic-risk duties attach to foundation-model providers — the layer most clinical generative tools are built on.' },
+    { date: 'Nov 2025', who: 'EU · India', title: 'Two divergent moves in one month', body: 'The Commission proposes the Digital Omnibus on AI on 19 November, conceding that implementation is behind schedule. MeitY publishes India’s AI Governance Guidelines on 5 November, declining to legislate at all.' },
+    { date: 'Dec 2025', who: 'US', title: 'Executive Order 14365', body: 'Directs a DOJ litigation task force against state AI laws, a Commerce review, and conditions on some federal funding — after a legislated moratorium failed in the Senate 99–1.' },
+    { date: 'Apr 2026', who: 'Health Canada', title: 'Machine-learning device guidance published', body: 'Pre-market expectations for Class II–IV machine-learning devices, with change-control plans, bias management and lifecycle monitoring. Mandatory electronic submissions and expanded licence conditions land the same season.' },
+    { date: 'Jun 2026', who: 'EU', title: 'Digital Omnibus on AI adopted', body: 'Parliament endorses the final text on 16 June and the Council approves on 29 June. High-risk deadlines move; transparency duties do not.' },
+    { date: '2 Aug 2026', who: 'EU', title: 'Article 50 transparency duties apply', body: 'Disclosure that a person is interacting with an AI system, machine-readable marking of synthetic content, and notice for emotion-recognition and biometric-categorisation systems.' },
+    { date: '2 Dec 2027', who: 'EU', title: 'Annex III high-risk duties apply', body: 'Standalone high-risk systems — including tools used in access to essential services — reach full compliance obligations after a sixteen-month deferral.', future: true },
+    { date: '2 Aug 2028', who: 'EU', title: 'Annex I high-risk duties apply', body: 'AI embedded in products already regulated under EU product-safety law, medical devices among them. The last clock, and the one that governs most clinical AI.', future: true }
+  ];
+
+  /* ------------------------------------------------------------------------
+     5. FOUR REGULATORY POSTURES
+     dial = relative prescriptiveness, 1–5, for orientation only.
+     ------------------------------------------------------------------------ */
+  const COMPARE = [
+    {
+      flag: 'EU',
+      title: 'Comprehensive statute',
+      dial: 5,
+      mech: 'A single risk-tiered law over all sectors, enforced through conformity assessment and turnover-based penalties.',
+      rows: [
+        ['Trigger', 'Risk tier of the intended use'],
+        ['Clinical AI', 'High-risk via the medical-device annex'],
+        ['Strength', 'One vocabulary, extraterritorial reach'],
+        ['Strain', 'Standards and authorities arrived late; deadlines slipped twice']
+      ]
+    },
+    {
+      flag: 'US',
+      title: 'Sectoral and state-led',
+      dial: 2,
+      mech: 'Device law for the software, privacy law for the data, and state statutes for the clinical and payer decision.',
+      rows: [
+        ['Trigger', 'Intended use, plus the patient’s state'],
+        ['Clinical AI', 'Device pathway, or nothing at all'],
+        ['Strength', 'Fast market entry, deep device expertise'],
+        ['Strain', 'Conflicting state duties and an unresolved preemption fight']
+      ]
+    },
+    {
+      flag: 'CA · UK',
+      title: 'Lifecycle device oversight',
+      dial: 3,
+      mech: 'No AI statute. Existing device regulators extend their remit across the product lifecycle, with sandboxes and licence conditions doing the work.',
+      rows: [
+        ['Trigger', 'Medical-device definition'],
+        ['Clinical AI', 'Change-control plans and post-market duties'],
+        ['Strength', 'Proportionate, adapts without new legislation'],
+        ['Strain', 'Tools outside the device definition stay unaddressed']
+      ]
+    },
+    {
+      flag: 'CN',
+      title: 'Service-level prescription',
+      dial: 4,
+      mech: 'Providers file algorithms, pass security assessment and label outputs before launch, separately from device approval.',
+      rows: [
+        ['Trigger', 'Offering a service to the public'],
+        ['Clinical AI', 'Device review plus service-level duties'],
+        ['Strength', 'Provenance and accountability built in early'],
+        ['Strain', 'Front-loaded approval, lighter post-market feedback']
+      ]
+    }
+  ];
+
+  /* ------------------------------------------------------------------------
+     6. WHERE FRAMEWORKS CONVERGE
+     ------------------------------------------------------------------------ */
+  const PRINCIPLES = [
+    { k: 'Oversight', t: 'A human in a position to disagree', d: 'Not a rubber stamp. Every framework requires that a person can override the system and has the standing, time and information to do it.' },
+    { k: 'Data', t: 'Provenance and representativeness', d: 'Where training data came from, who it represents, and who it omits. The most common reason a validated tool fails in a new clinic.' },
+    { k: 'Disclosure', t: 'The user knows it is AI', d: 'Now a hard legal duty in the EU and several US states, and a professional obligation almost everywhere else.' },
+    { k: 'Lifecycle', t: 'Approval is not the finish line', d: 'Change-control plans, post-market surveillance and performance monitoring have become the centre of gravity in device regulation.' },
+    { k: 'Risk tiering', t: 'Obligation scales with consequence', d: 'Every serious framework grades duties by how much harm a wrong output can do, however differently they draw the lines.' },
+    { k: 'Reporting', t: 'Incidents travel upward', d: 'A route for clinicians to report AI-related harm, and a duty on someone to act on it. The weakest link in most deployments today.' }
+  ];
+
+  /* ------------------------------------------------------------------------
+     7. OUTLOOK
+     ------------------------------------------------------------------------ */
+  const RISKS = [
+    { t: 'Silent degradation', d: 'Performance drifts as case mix, equipment, coding practice or referral patterns change. Nothing alarms; accuracy simply erodes, and only prospective monitoring will catch it.' },
+    { t: 'Automation bias', d: 'Clinicians defer to a confident output, and the tool becomes the decision rather than an input to it. Documented for both professionals and patients, and worse under time pressure.' },
+    { t: 'The scope gap', d: 'Scribes, inbox drafters, triage chatbots and coding assistants often sit outside the medical-device definition, so they carry no pre-market evidence duty while shaping clinical work daily.' },
+    { t: 'Evidence thinness', d: 'A large share of authorised tools reached market on retrospective data, without prospective clinical evaluation or reported subgroup performance.' },
+    { t: 'Equity inversion', d: 'Tools are trained where data is abundant and deployed where need is greatest. Performance is worst for the populations with the least representation and the fewest alternatives.' },
+    { t: 'Procurement asymmetry', d: 'A hospital committee negotiating with a vendor rarely has the technical standing to demand the right evidence, and vendors are rarely obliged to volunteer it.' }
+  ];
+
+  const OPPS = [
+    { t: 'Detection at population scale', d: 'Screening and triage tools genuinely extend specialist reach — the strongest evidence base in the field, and the reason radiology dominates every authorisation list.' },
+    { t: 'Returning time to clinicians', d: 'Documentation and administrative load is where generative tools have the clearest near-term case, provided accuracy and accountability are measured rather than assumed.' },
+    { t: 'Reach into under-served settings', d: 'Where specialists are scarce, a validated tool changes what care is possible at all. This is also where validation evidence is thinnest, which makes it a governance priority rather than a footnote.' },
+    { t: 'Reducing unwarranted variation', d: 'Consistent application of guidelines is a quality gain in its own right, and easier to audit in software than in habit.' },
+    { t: 'Change control as quality machinery', d: 'A well-written change-control plan is the first mechanism that makes continuous improvement legal and legible. Fewer than two percent of authorised devices have one — which makes it an opening, not a ceiling.' },
+    { t: 'Measurement infrastructure', d: 'Governance forces health systems to build monitoring they never had for human decisions either. Some of the durable gains will come from the instrumentation, not the models.' }
+  ];
+
+  /* ------------------------------------------------------------------------
+     8. PRIMARY SOURCES
+     ------------------------------------------------------------------------ */
+  const RESOURCES = [
+    {
+      group: 'Instruments and guidance',
+      items: [
+        { t: 'Regulation (EU) 2024/1689 — the AI Act', m: 'EUR-Lex · consolidated text', href: 'https://eur-lex.europa.eu/eli/reg/2024/1689/oj' },
+        { t: 'Ethics and governance of AI for health: large multi-modal models', m: 'WHO · 2024', href: 'https://www.who.int/publications/i/item/9789240084759' },
+        { t: 'Ethics and governance of artificial intelligence for health', m: 'WHO · 2021 · six principles', href: 'https://www.who.int/publications/i/item/9789240029200' },
+        { t: 'Pre-market guidance for machine learning-enabled medical devices', m: 'Health Canada · April 2026', href: 'https://www.canada.ca/en/health-canada/services/drugs-health-products/medical-devices/application-information/guidance-documents/pre-market-guidance-machine-learning-enabled-medical-devices.html' },
+        { t: 'AI Risk Management Framework', m: 'NIST · Govern, Map, Measure, Manage', href: 'https://www.nist.gov/itl/ai-risk-management-framework' },
+        { t: 'OECD AI Principles', m: 'OECD · 2019, updated 2024', href: 'https://oecd.ai/en/ai-principles' }
+      ]
+    },
+    {
+      group: 'Regulators and standards bodies',
+      items: [
+        { t: 'AI-enabled medical device list', m: 'FDA · CDRH', href: 'https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-enabled-medical-device-list' },
+        { t: 'MedRegs — regulatory commentary', m: 'MHRA', href: 'https://medregs.blog.gov.uk/' },
+        { t: 'AI Airlock sandbox programme report', m: 'MHRA · pilot findings', href: 'https://assets.publishing.service.gov.uk/media/68ee1fb88427701993d5e02c/AI_Airlock_Sandbox_Programme_Report_Final.pdf' },
+        { t: 'International Medical Device Regulators Forum', m: 'IMDRF · GMLP and AI/ML work', href: 'https://www.imdrf.org/' },
+        { t: 'Therapeutic Goods Administration', m: 'Australia · software as a medical device', href: 'https://www.tga.gov.au/' },
+        { t: 'National Medical Products Administration', m: 'China · device review', href: 'https://www.nmpa.gov.cn/' }
+      ]
+    },
+    {
+      group: 'Organisations and trackers',
+      items: [
+        { t: 'HealthAI — the global agency for responsible AI in health', m: 'Geneva · regulatory capacity', href: 'https://healthai.agency/' },
+        { t: 'Health AI Policy Tracker', m: 'Manatt Health · US federal and state', href: 'https://www.manatt.com/insights/newsletters/health-highlights/manatt-health-health-ai-policy-tracker' },
+        { t: 'Recommendation on the Ethics of AI', m: 'UNESCO · 193 member states', href: 'https://www.unesco.org/en/artificial-intelligence/recommendation-ethics' },
+        { t: 'Artificial intelligence work programme', m: 'Council of Europe · Framework Convention', href: 'https://www.coe.int/en/web/artificial-intelligence' },
+        { t: 'Practice standard on artificial intelligence', m: 'CPSBC · a provincial college example', href: 'https://www.cpsbc.ca/files/pdf/CPSBC-PG-Artificial-Intelligence.pdf' },
+        { t: 'IndiaAI Mission', m: 'MeitY · governance guidelines', href: 'https://indiaai.gov.in/' }
+      ]
+    }
+  ];
+
+  /* ------------------------------------------------------------------------
+     9. FAQ
+     ------------------------------------------------------------------------ */
+  const FAQ = [
+    {
+      q: 'Is our tool a medical device?',
+      a: [
+        'Intended purpose decides, not the technology. If the software is intended for diagnosis, prevention, monitoring, prediction, prognosis, treatment or alleviation of disease, it is almost certainly a device in the EU, US, UK, Canada and Australia.',
+        'The same model can fall on either side of the line depending on the claim you make. A tool that flags a finding for a clinician is usually a device; a tool that transcribes a consultation usually is not. Marketing copy has repeatedly pulled products into scope that engineering never intended.'
+      ]
+    },
+    {
+      q: 'The EU deferred the high-risk rules. Does that mean we can pause?',
+      a: [
+        'No. The deferral is specific. Standalone high-risk systems under Annex III moved to 2 December 2027, and AI embedded in regulated products under Annex I — the route most clinical AI travels — moved to 2 August 2028.',
+        'Article 50 transparency duties were not deferred and have applied since 2 August 2026. Prohibited practices, AI-literacy duties and general-purpose model obligations were already in force. Stale compliance calendars are now the more common failure than late preparation.'
+      ]
+    },
+    {
+      q: 'What is a Predetermined Change Control Plan, and do we need one?',
+      a: [
+        'A PCCP specifies in advance what will change in your model after authorisation — retraining cadence, the data used, the performance bounds that must hold, and how you will verify them. With one, bounded updates can ship without a new submission. Without one, retraining means going back to the regulator.',
+        'The FDA, MHRA and Health Canada developed the concept jointly, so a well-written plan can serve more than one submission. They remain rare: roughly 26 authorised US devices had one as of May 2025, under two percent of the AI-enabled total. If your product roadmap assumes model updates, this is the document that makes them lawful.'
+      ]
+    },
+    {
+      q: 'Does the AI Act apply to a hospital, or only to vendors?',
+      a: [
+        'Both, in different roles. Providers — those who develop or place a system on the market — carry the heaviest duties. Deployers, which includes health systems using a high-risk tool, carry their own: human oversight, use in line with the instructions, input-data relevance, log retention, and informing affected people in certain cases.',
+        'Two things change your role. Putting your name on a system, or modifying its intended purpose, can make a deployer into a provider. Fine-tuning a model on local data is the most common way that line gets crossed by accident.'
+      ]
+    },
+    {
+      q: 'What should a governance committee ask a vendor for?',
+      a: [
+        'Intended use and contraindications in writing. The validation population, described precisely enough to compare against yours. Performance disaggregated by the subgroups you actually serve. The regulatory status and pathway, with the authorisation document. Whether a change-control plan exists and what it permits. How and when you will be told the model changed. What the tool logs, and whether you can get those logs out.',
+        'If a vendor cannot answer the subgroup question, that is itself the finding.'
+      ]
+    },
+    {
+      q: 'Where does privacy law sit relative to AI law?',
+      a: [
+        'Underneath all of it, and often binding sooner. Health data processing needs a lawful basis regardless of whether an AI statute applies: GDPR in the EU, HIPAA and state law in the US, PIPEDA with provincial health statutes such as Ontario’s PHIPA and Alberta’s HIA in Canada, and the DPDP Act in India.',
+        'Secondary use for model training is the pressure point. Consent obtained for care rarely covers development, de-identification is weaker than most teams assume for rich clinical data, and cross-border training raises transfer questions that no AI-specific instrument resolves for you.'
+      ]
+    },
+    {
+      q: 'Nobody regulates our ambient scribe. Is that a problem?',
+      a: [
+        'It is the central unresolved problem. Tools that draft notes, replies and referral letters shape the record that every later decision rests on, yet usually sit outside the device definition and so carry no pre-market evidence requirement.',
+        'Governance has to come from somewhere else: procurement conditions, professional-college standards, local evaluation before rollout, disclosure to patients, and an audit trail that shows what was generated and who approved it. Several jurisdictions now require the disclosure element by statute, and states are legislating fastest in exactly this space.'
+      ]
+    }
+  ];
+
+  global.MERIDIAN_DATA = { HORIZON, JURISDICTIONS, ETHICS, TIMELINE, COMPARE, PRINCIPLES, RISKS, OPPS, RESOURCES, FAQ };
+
+})(window);
+
+</script>
+<script>
+/* ==========================================================================
+   MERIDIAN — BEHAVIOUR
+   --------------------------------------------------------------------------
+   No dependencies. Organised as small independent initialisers called once
+   from boot(); each guards its own DOM so a missing section never breaks the
+   rest of the page.
+
+   Contents
+     00  Helpers and motion preference
+     01  Loader
+     02  Pointer light
+     03  Neural field canvas
+     04  Masthead: stuck state, progress, menu, active section
+     05  Reveal on scroll
+     06  Animated counters
+     07  Regulatory Horizon
+     08  Jurisdiction map and panel
+     09  Ethics cards
+     10  Timeline and spine
+     11  Comparison, principles, ledger, resources
+     12  Accordion
+     13  Contact form
+     14  Back to top
+     15  Boot
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  const D = window.MERIDIAN_DATA || {};
+
+  /* 00  HELPERS
+     ---------------------------------------------------------------------- */
+  const $  = (sel, ctx) => (ctx || document).querySelector(sel);
+  const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  // Single source of truth for motion. Re-read live so a system change mid-visit
+  // is respected without a reload.
+  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const MOTION = () => !motionQuery.matches;
+
+  /** Build an element with attributes and children in one call. */
+  function el(tag, attrs, children) {
+    const node = document.createElement(tag);
+    if (attrs) for (const k in attrs) {
+      if (k === 'class') node.className = attrs[k];
+      else if (k === 'html') node.innerHTML = attrs[k];
+      else if (k === 'text') node.textContent = attrs[k];
+      else node.setAttribute(k, attrs[k]);
+    }
+    if (children) children.forEach(c => node.appendChild(c));
+    return node;
+  }
+
+  /** Same, for SVG, which needs its own namespace. */
+  function svgEl(tag, attrs) {
+    const node = document.createElementNS(SVG_NS, tag);
+    if (attrs) for (const k in attrs) node.setAttribute(k, attrs[k]);
+    return node;
+  }
+
+  /** Throttle a scroll or pointer handler to one call per animation frame. */
+  function onFrame(fn) {
+    let queued = false;
+    return function () {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; fn(); });
+    };
+  }
+
+  const DAY = 86400000;
+  const fmtDate = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  const fmtLong = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+
+  /* 01  LOADER
+     Dismissed on load, with a hard timeout so a slow font or a blocked
+     request can never leave the reader looking at a spinner.
+     ---------------------------------------------------------------------- */
+  function initLoader() {
+    const loader = $('#loader');
+    if (!loader) return;
+
+    let dismissed = false;
+    const dismiss = () => {
+      if (dismissed) return;
+      dismissed = true;
+      loader.classList.add('is-done');
+      document.body.classList.add('is-ready');
+      // Remove from the tree so it can never trap focus
+      setTimeout(() => loader.remove(), 700);
+    };
+
+    if (document.readyState === 'complete') setTimeout(dismiss, 260);
+    else window.addEventListener('load', () => setTimeout(dismiss, 260));
+    setTimeout(dismiss, 2600);
+  }
+
+
+  /* 02  POINTER LIGHT
+     Fine pointers only. Lerped towards the cursor so it trails slightly
+     rather than snapping, and driven from a single rAF loop.
+     ---------------------------------------------------------------------- */
+  function initCursor() {
+    const glow = $('#cursorGlow');
+    if (!glow || !MOTION()) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+
+    let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
+    let cx = tx, cy = ty, running = false;
+
+    function loop() {
+      cx += (tx - cx) * 0.12;
+      cy += (ty - cy) * 0.12;
+      glow.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+      if (Math.abs(tx - cx) > 0.4 || Math.abs(ty - cy) > 0.4) requestAnimationFrame(loop);
+      else running = false;
+    }
+
+    window.addEventListener('pointermove', (e) => {
+      tx = e.clientX; ty = e.clientY;
+      glow.classList.add('is-on');
+      if (!running) { running = true; requestAnimationFrame(loop); }
+    }, { passive: true });
+
+    document.addEventListener('pointerleave', () => glow.classList.remove('is-on'));
+  }
+
+
+  /* 03  NEURAL FIELD CANVAS
+     A drifting node graph behind the hero. Kept cheap deliberately:
+       · node count scales with viewport area and is capped
+       · device pixel ratio capped at 2
+       · the loop stops entirely once the hero scrolls out of view
+       · the loop stops when the tab is hidden
+     ---------------------------------------------------------------------- */
+  function initField() {
+    const canvas = $('#field');
+    const hero = $('#hero');
+    if (!canvas || !hero || !MOTION()) return;
+
+    const ctx = canvas.getContext('2d', { alpha: true });
+    let w = 0, h = 0, dpr = 1;
+    let nodes = [];
+    let mx = 0, my = 0;      // parallax target, -1 … 1
+    let px = 0, py = 0;      // parallax current
+    let raf = null;
+    let visible = true;
+
+    function size() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas.clientWidth;
+      h = canvas.clientHeight;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seed();
+    }
+
+    function seed() {
+      const target = clamp(Math.round((w * h) / 19000), 26, 88);
+      nodes = [];
+      for (let i = 0; i < target; i++) {
+        nodes.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.19,
+          vy: (Math.random() - 0.5) * 0.19,
+          r: Math.random() * 1.5 + 0.7,
+          d: Math.random() * 0.7 + 0.35   // depth, drives parallax strength
+        });
+      }
+    }
+
+    const LINK = 132;          // link distance in CSS pixels
+    const LINK_SQ = LINK * LINK;
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      px += (mx - px) * 0.05;
+      py += (my - py) * 0.05;
+
+      // Edges first so nodes sit on top
+      for (let i = 0; i < nodes.length; i++) {
+        const a = nodes[i];
+        const ax = a.x + px * 26 * a.d;
+        const ay = a.y + py * 26 * a.d;
+
+        for (let j = i + 1; j < nodes.length; j++) {
+          const b = nodes[j];
+          const bx = b.x + px * 26 * b.d;
+          const by = b.y + py * 26 * b.d;
+          const dx = ax - bx, dy = ay - by;
+          const dsq = dx * dx + dy * dy;
+          if (dsq > LINK_SQ) continue;
+
+          const t = 1 - dsq / LINK_SQ;               // 0 … 1 closeness
+          ctx.strokeStyle = `rgba(120, 190, 245, ${(t * 0.2).toFixed(3)})`;
+          ctx.lineWidth = 0.6;
+          ctx.beginPath();
+          ctx.moveTo(ax, ay);
+          ctx.lineTo(bx, by);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = `rgba(150, 215, 250, ${(0.16 + a.d * 0.3).toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(ax, ay, a.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Drift, wrapping at the edges
+        a.x += a.vx; a.y += a.vy;
+        if (a.x < -20) a.x = w + 20; else if (a.x > w + 20) a.x = -20;
+        if (a.y < -20) a.y = h + 20; else if (a.y > h + 20) a.y = -20;
+      }
+    }
+
+    function tick() {
+      if (!visible) { raf = null; return; }
+      draw();
+      raf = requestAnimationFrame(tick);
+    }
+
+    function start() { if (!raf && visible) raf = requestAnimationFrame(tick); }
+    function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+    // Only run while the hero is on screen
+    new IntersectionObserver((entries) => {
+      visible = entries[0].isIntersecting;
+      if (visible) start(); else stop();
+    }, { threshold: 0 }).observe(hero);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { visible = false; stop(); }
+      else { visible = true; start(); }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      mx = (e.clientX / window.innerWidth) * 2 - 1;
+      my = (e.clientY / window.innerHeight) * 2 - 1;
+    }, { passive: true });
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(size, 180);
+    });
+
+    size();
+    canvas.classList.add('is-on');
+    start();
+  }
+
+
+  /* 04  MASTHEAD
+     ---------------------------------------------------------------------- */
+  function initMasthead() {
+    const bar = $('#masthead');
+    const progress = $('#readProgress');
+    const links = $$('#primaryNav .nav__list a');
+    const sections = links
+      .map(a => document.getElementById(a.getAttribute('href').slice(1)))
+      .filter(Boolean);
+
+    const update = onFrame(() => {
+      const y = window.scrollY;
+      if (bar) bar.classList.toggle('is-stuck', y > 40);
+
+      if (progress) {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.transform = `scaleX(${max > 0 ? clamp(y / max, 0, 1) : 0})`;
+      }
+
+      // Active section: the last one whose top has passed the reading line
+      const line = y + window.innerHeight * 0.32;
+      let current = -1;
+      for (let i = 0; i < sections.length; i++) {
+        if (sections[i].offsetTop <= line) current = i;
+      }
+      links.forEach((a, i) => a.classList.toggle('is-active', i === current));
+    });
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+
+    /* Mobile menu ------------------------------------------------------- */
+    const toggle = $('#menuToggle');
+    const nav = $('#primaryNav');
+    if (!toggle || !nav) return;
+
+    const setOpen = (open) => {
+      nav.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      $('.sr-only', toggle).textContent = open ? 'Close menu' : 'Open menu';
+      document.body.style.overflow = open ? 'hidden' : '';
+    };
+
+    toggle.addEventListener('click', () => setOpen(!nav.classList.contains('is-open')));
+    nav.addEventListener('click', (e) => { if (e.target.closest('a')) setOpen(false); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav.classList.contains('is-open')) { setOpen(false); toggle.focus(); }
+    });
+    // Reset when the layout returns to desktop
+    window.matchMedia('(min-width: 901px)').addEventListener('change', (e) => {
+      if (e.matches) setOpen(false);
+    });
+  }
+
+
+  /* 05  REVEAL ON SCROLL
+     One observer for every revealable node. data-reveal-delay maps to a CSS
+     custom property so the stagger lives in the stylesheet.
+     ---------------------------------------------------------------------- */
+  let revealObserver = null;
+
+  function initReveal() {
+    if (!('IntersectionObserver' in window) || !MOTION()) {
+      $$('[data-reveal]').forEach(n => n.classList.add('is-visible'));
+      return;
+    }
+
+    revealObserver = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        obs.unobserve(entry.target);       // reveal once, then stop watching
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+
+    observeReveals();
+  }
+
+  /** Register any not-yet-observed reveal targets. Called again after render. */
+  function observeReveals() {
+    const targets = $$('[data-reveal], .stat, .ecard, .ccard, .pcard, .jur-card, .rgroup, .tl-item');
+    targets.forEach(node => {
+      if (node.dataset.revealBound) return;
+      node.dataset.revealBound = '1';
+      const delay = node.getAttribute('data-reveal-delay');
+      if (delay) node.style.setProperty('--rd', delay);
+      if (revealObserver) revealObserver.observe(node);
+      else node.classList.add('is-visible');
+    });
+  }
+
+
+  /* 06  ANIMATED COUNTERS
+     ---------------------------------------------------------------------- */
+  function initCounters() {
+    const counters = $$('[data-count]');
+    if (!counters.length) return;
+
+    const run = (node) => {
+      const end = parseFloat(node.getAttribute('data-count'));
+      if (!MOTION() || end === 0) { node.textContent = end.toLocaleString('en-GB'); return; }
+
+      const dur = 1500;
+      const t0 = performance.now();
+      const step = (now) => {
+        const p = clamp((now - t0) / dur, 0, 1);
+        const eased = 1 - Math.pow(2, -10 * p);        // easeOutExpo
+        node.textContent = Math.round(end * eased).toLocaleString('en-GB');
+        if (p < 1) requestAnimationFrame(step);
+        else node.textContent = end.toLocaleString('en-GB');
+      };
+      requestAnimationFrame(step);
+    };
+
+    if (!('IntersectionObserver' in window)) { counters.forEach(run); return; }
+
+    const obs = new IntersectionObserver((entries, o) => {
+      entries.forEach(e => { if (e.isIntersecting) { run(e.target); o.unobserve(e.target); } });
+    }, { threshold: 0.6 });
+    counters.forEach(n => obs.observe(n));
+  }
+
+
+  /* 07  REGULATORY HORIZON
+     Positions, states and day counts are derived from the clock, so the
+     instrument stays correct long after publication.
+     ---------------------------------------------------------------------- */
+  function initHorizon() {
+    const axisBox = $('#horizonAxis');
+    const list = $('#horizonList');
+    const next = $('#horizonNext');
+    if (!axisBox || !list || !D.HORIZON) return;
+
+    const now = Date.now();
+    const t0 = new Date(D.HORIZON.axisStart).getTime();
+    const t1 = new Date(D.HORIZON.axisEnd).getTime();
+    const span = t1 - t0;
+    const pct = (t) => clamp(((t - t0) / span) * 100, 0, 100);
+
+    const items = D.HORIZON.milestones.map(m => {
+      const t = new Date(m.date).getTime();
+      return { ...m, t, past: t <= now };
+    });
+    const nextIdx = items.findIndex(m => !m.past);
+
+    /* Axis ------------------------------------------------------------- */
+    axisBox.appendChild(el('span', { class: 'horizon__track' }));
+
+    const elapsed = el('span', { class: 'horizon__elapsed' });
+    elapsed.style.width = pct(now) + '%';
+    axisBox.appendChild(elapsed);
+
+    items.forEach((m, i) => {
+      const state = i === nextIdx ? 'next' : (m.past ? 'past' : 'future');
+      const tick = el('span', { class: 'horizon__tick', 'data-state': state });
+      tick.style.left = pct(m.t) + '%';
+      tick.title = fmtDate.format(m.t) + ' — ' + m.title;
+      axisBox.appendChild(tick);
+    });
+
+    // Year labels at each January, plus the axis ends
+    [2025, 2026, 2027, 2028].forEach(yr => {
+      const t = new Date(yr + '-01-01').getTime();
+      if (t < t0 || t > t1) return;
+      const lab = el('span', { class: 'horizon__tickYear', text: String(yr) });
+      lab.style.left = pct(t) + '%';
+      axisBox.appendChild(lab);
+    });
+
+    const nowMark = el('span', { class: 'horizon__now' });
+    nowMark.style.left = pct(now) + '%';
+    nowMark.title = 'Today';
+    axisBox.appendChild(nowMark);
+
+    /* List — the most recent milestone already passed, then everything ahead */
+    const startIdx = nextIdx === -1 ? Math.max(0, items.length - 4) : Math.max(0, nextIdx - 1);
+    items.slice(startIdx).forEach((m, i) => {
+      const state = (startIdx + i) === nextIdx ? 'next' : (m.past ? 'past' : 'future');
+      const row = el('li', { class: 'horizon__item', 'data-state': state });
+      row.appendChild(el('span', { class: 'horizon__date', text: fmtDate.format(m.t) }));
+      const what = el('div', { class: 'horizon__what' });
+      what.appendChild(document.createTextNode(m.title));
+      what.appendChild(el('small', { text: m.note }));
+      row.appendChild(what);
+      row.appendChild(el('span', { class: 'horizon__flag', text: m.flag }));
+      list.appendChild(row);
+    });
+
+    /* Next-date readout ------------------------------------------------- */
+    if (next) {
+      const value = $('.horizon__nextValue', next);
+      const meta = $('.horizon__nextMeta', next);
+      if (nextIdx === -1) {
+        value.textContent = 'All tracked dates have passed';
+        meta.textContent = 'Update the milestone list in js/data.js.';
+      } else {
+        const m = items[nextIdx];
+        const days = Math.ceil((m.t - now) / DAY);
+        value.textContent = fmtLong.format(m.t);
+        meta.innerHTML = '<b>' + days.toLocaleString('en-GB') + ' days</b> — ' + m.title;
+      }
+    }
+  }
+
+
+  /* 08  JURISDICTION MAP AND PANEL
+     The map is a 5° dot matrix drawn from a coarse land mask; markers are
+     projected from real latitude and longitude, so they cannot drift out of
+     agreement with the text. Cards below are the primary control surface —
+     the markers mirror them.
+     ---------------------------------------------------------------------- */
+
+  // Land mask: for each 5° latitude row (row 1 = 85–80°N), the inclusive
+  // ranges of 5° longitude columns (column 0 = 180–175°W) that contain land.
+  const LAND_ROWS = {
+    1:  [[14, 25], [27, 32], [38, 39]],
+    2:  [[13, 25], [26, 33], [54, 56]],
+    3:  [[3, 4], [12, 26], [27, 33], [39, 40], [46, 64]],
+    4:  [[2, 26], [28, 33], [38, 71]],
+    5:  [[2, 27], [30, 33], [38, 71]],
+    6:  [[2, 27], [33, 35], [37, 71]],
+    7:  [[8, 27], [33, 34], [36, 71]],
+    8:  [[9, 27], [33, 70]],
+    9:  [[10, 26], [32, 70]],
+    10: [[11, 26], [32, 35], [37, 68]],
+    11: [[12, 25], [31, 40], [41, 67]],
+    12: [[13, 24], [31, 42], [43, 66]],
+    13: [[15, 23], [31, 43], [44, 47], [48, 64]],
+    14: [[16, 25], [30, 43], [44, 46], [48, 62]],
+    15: [[18, 24], [30, 42], [43, 45], [49, 52], [54, 62]],
+    16: [[20, 26], [31, 41], [43, 46], [51, 51], [55, 61]],
+    17: [[21, 28], [32, 42], [44, 45], [55, 62]],
+    18: [[22, 30], [33, 43], [55, 63]],
+    19: [[23, 31], [33, 43], [56, 64]],
+    20: [[24, 32], [33, 42], [45, 45], [58, 66]],
+    21: [[24, 32], [33, 41], [45, 46], [57, 67]],
+    22: [[24, 31], [33, 40], [45, 46], [57, 67]],
+    23: [[24, 31], [33, 39], [57, 67]],
+    24: [[25, 30], [33, 38], [58, 66]],
+    25: [[25, 29], [60, 65], [69, 71]],
+    26: [[25, 28], [64, 64], [69, 71]],
+    27: [[25, 27]],
+    28: [[25, 27]],
+    29: [[25, 26]]
+  };
+
+  // Equirectangular projection matching the dot grid
+  const projX = (lon) => (lon + 180) * 2;
+  const projY = (lat) => 177 - lat * 2;
+
+  // Label offsets keep the dense European cluster legible
+  const LABEL_OFFSETS = {
+    eu:  { dx: 13,  dy: 4,   anchor: 'start' },
+    uk:  { dx: -13, dy: -7,  anchor: 'end' },
+    who: { dx: 3,   dy: 20,  anchor: 'start' },
+    us:  { dx: 0,   dy: 19,  anchor: 'middle' },
+    ca:  { dx: 0,   dy: -11, anchor: 'middle' },
+    cn:  { dx: 0,   dy: -11, anchor: 'middle' },
+    in:  { dx: -2,  dy: 19,  anchor: 'middle' },
+    au:  { dx: 0,   dy: 19,  anchor: 'middle' },
+    'au-cont': { dx: 12, dy: 4, anchor: 'start' }
+  };
+
+  function initAtlas() {
+    const landGroup = $('#mapLand');
+    const pinGroup = $('#mapPins');
+    const panel = $('#jurPanel');
+    const cardWrap = $('#jurCards');
+    const data = D.JURISDICTIONS;
+    if (!panel || !cardWrap || !data) return;
+
+    /* Land dots -------------------------------------------------------- */
+    if (landGroup) {
+      const frag = document.createDocumentFragment();
+      Object.keys(LAND_ROWS).forEach(rowKey => {
+        const r = parseInt(rowKey, 10);
+        const y = (r - 1) * 10 + 12;
+        LAND_ROWS[rowKey].forEach(([from, to]) => {
+          for (let c = from; c <= to; c++) {
+            frag.appendChild(svgEl('circle', {
+              class: 'land-dot', cx: c * 10 + 5, cy: y, r: 1.5
+            }));
+          }
+        });
+      });
+      landGroup.appendChild(frag);
+    }
+
+    /* Markers ---------------------------------------------------------- */
+    if (pinGroup) {
+      data.forEach(j => {
+        const x = projX(j.lon), y = projY(j.lat);
+        const off = LABEL_OFFSETS[j.id] || { dx: 0, dy: 18, anchor: 'middle' };
+
+        const g = svgEl('g', {
+          class: 'pin', 'data-id': j.id, role: 'button', tabindex: '0',
+          'aria-label': j.name + ' — ' + j.posture
+        });
+        g.appendChild(svgEl('circle', { class: 'pin__halo', cx: x, cy: y, r: 26 }));
+        g.appendChild(svgEl('circle', { class: 'pin__ring', cx: x, cy: y, r: 5 }));
+        g.appendChild(svgEl('circle', { class: 'pin__core', cx: x, cy: y, r: 3 }));
+
+        const label = svgEl('text', {
+          class: 'pin__label', x: x + off.dx, y: y + off.dy, 'text-anchor': off.anchor
+        });
+        label.textContent = j.code;
+        g.appendChild(label);
+
+        g.addEventListener('click', () => select(j.id));
+        g.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(j.id); }
+        });
+        pinGroup.appendChild(g);
+      });
+    }
+
+    /* Cards ------------------------------------------------------------ */
+    data.forEach(j => {
+      const card = el('button', { class: 'jur-card', type: 'button', 'data-id': j.id, 'aria-pressed': 'false' }, [
+        el('span', { class: 'jur-card__code', text: j.code + ' · ' + j.posture }),
+        el('span', { class: 'jur-card__name', text: j.short }),
+        el('span', { class: 'jur-card__inst', text: j.instrument })
+      ]);
+      card.addEventListener('click', () => select(j.id));
+      cardWrap.appendChild(card);
+    });
+
+    /* Selection -------------------------------------------------------- */
+    function select(id) {
+      const j = data.find(x => x.id === id);
+      if (!j) return;
+
+      $$('.pin', pinGroup).forEach(p => p.classList.toggle('is-selected', p.dataset.id === id));
+      $$('.jur-card', cardWrap).forEach(c => {
+        const on = c.dataset.id === id;
+        c.classList.toggle('is-selected', on);
+        c.setAttribute('aria-pressed', String(on));
+      });
+
+      const rows = j.rows.map(([k, v]) =>
+        `<li><span class="jp__k">${k}</span><span class="jp__v">${v}</span></li>`
+      ).join('');
+
+      panel.innerHTML = `
+        <div class="jp-anim">
+          <div class="jp__top">
+            <span class="jp__code">${j.code}</span>
+            <span class="jp__posture">${j.posture}</span>
+          </div>
+          <h3 class="jp__name">${j.name}</h3>
+          <p class="jp__thesis">${j.thesis}</p>
+          <ul class="jp__rows">${rows}</ul>
+          <div class="jp__foot">
+            <a class="jp__link" href="${j.link}" target="_blank" rel="noopener noreferrer">
+              ${j.linkLabel}
+              <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M3 9L9 3M9 3H4.5M9 3v4.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="sr-only">(opens in a new tab)</span>
+            </a>
+          </div>
+        </div>`;
+    }
+
+    select('eu');   // open on the most developed framework
+  }
+
+
+  /* 09  ETHICS CARDS
+     ---------------------------------------------------------------------- */
+  function initEthics() {
+    const wrap = $('#ethicsGrid');
+    if (!wrap || !D.ETHICS) return;
+
+    D.ETHICS.forEach((e, i) => {
+      const card = el('article', { class: 'ecard', 'data-reveal-delay': String(i % 3) });
+      card.innerHTML = `
+        <span class="ecard__num">0${i + 1}</span>
+        <div class="ecard__icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="${e.icon}" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3 class="ecard__title">${e.title}</h3>
+        <p class="ecard__body">${e.body}</p>
+        <p class="ecard__fail"><b>Failure mode</b>${e.fail}</p>`;
+
+      // Pointer-tracked highlight; cheap because it only writes two custom props
+      if (MOTION()) {
+        card.addEventListener('pointermove', (ev) => {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty('--mx', ((ev.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+          card.style.setProperty('--my', ((ev.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+        });
+      }
+      wrap.appendChild(card);
+    });
+  }
+
+
+  /* 10  TIMELINE AND SPINE
+     ---------------------------------------------------------------------- */
+  function initTimeline() {
+    const wrap = $('#timeline');
+    const fill = $('#timelineFill');
+    if (!wrap || !D.TIMELINE) return;
+
+    D.TIMELINE.forEach(item => {
+      const li = el('li', { class: 'tl-item', 'data-future': item.future ? 'true' : 'false' });
+      li.innerHTML = `
+        <span class="tl-item__dot" aria-hidden="true"></span>
+        <div class="tl-item__head">
+          <span class="tl-item__date">${item.date}</span>
+          <span class="tl-item__who">${item.who}</span>
+        </div>
+        <h3 class="tl-item__title">${item.title}</h3>
+        <p class="tl-item__body">${item.body}</p>`;
+      wrap.appendChild(li);
+    });
+
+    if (!fill || !MOTION()) { if (fill) fill.style.transform = 'scaleY(1)'; return; }
+
+    // The spine fills as the reader moves through the section
+    const update = onFrame(() => {
+      const r = wrap.getBoundingClientRect();
+      const line = window.innerHeight * 0.62;
+      const p = clamp((line - r.top) / r.height, 0, 1);
+      fill.style.transform = `scaleY(${p})`;
+    });
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+
+
+  /* 11  COMPARISON, PRINCIPLES, LEDGER, RESOURCES
+     ---------------------------------------------------------------------- */
+  function initCompare() {
+    const wrap = $('#compare');
+    if (!wrap || !D.COMPARE) return;
+
+    D.COMPARE.forEach((c, i) => {
+      const dial = Array.from({ length: 5 }, (_, n) =>
+        `<i class="${n < c.dial ? 'on' : ''}"></i>`).join('');
+      const rows = c.rows.map(([k, v]) => `<li><span>${k}</span><span>${v}</span></li>`).join('');
+
+      const card = el('article', { class: 'ccard', 'data-reveal-delay': String(i) });
+      card.innerHTML = `
+        <div class="ccard__head">
+          <span class="ccard__flag">${c.flag}</span>
+          <span class="ccard__dial" role="img" aria-label="Prescriptiveness ${c.dial} of 5">${dial}</span>
+        </div>
+        <h4 class="ccard__title">${c.title}</h4>
+        <p class="ccard__mech">${c.mech}</p>
+        <ul class="ccard__rows">${rows}</ul>`;
+      wrap.appendChild(card);
+    });
+  }
+
+  function initPrinciples() {
+    const wrap = $('#principles');
+    if (!wrap || !D.PRINCIPLES) return;
+    D.PRINCIPLES.forEach((p, i) => {
+      const card = el('article', { class: 'pcard', 'data-reveal-delay': String(i % 3) });
+      card.innerHTML = `
+        <p class="pcard__k">${p.k}</p>
+        <h4 class="pcard__t">${p.t}</h4>
+        <p class="pcard__d">${p.d}</p>`;
+      wrap.appendChild(card);
+    });
+  }
+
+  function initLedger() {
+    const pairs = [['#risks', D.RISKS], ['#opps', D.OPPS]];
+    pairs.forEach(([sel, items]) => {
+      const wrap = $(sel);
+      if (!wrap || !items) return;
+      items.forEach(it => {
+        wrap.appendChild(el('li', { html: `<strong>${it.t}</strong><p>${it.d}</p>` }));
+      });
+    });
+  }
+
+  function initResources() {
+    const wrap = $('#resources-grid');
+    if (!wrap || !D.RESOURCES) return;
+
+    D.RESOURCES.forEach((group, i) => {
+      const items = group.items.map(it => `
+        <li>
+          <a class="rlink" href="${it.href}" target="_blank" rel="noopener noreferrer">
+            <span class="rlink__t">${it.t}
+              <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 9L9 3M9 3H4.5M9 3v4.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <span class="rlink__m">${it.m}</span>
+          </a>
+        </li>`).join('');
+
+      const box = el('div', { class: 'rgroup', 'data-reveal-delay': String(i) });
+      box.innerHTML = `<h3 class="rgroup__title">${group.group}</h3><ul class="rgroup__list">${items}</ul>`;
+      wrap.appendChild(box);
+    });
+  }
+
+
+  /* 12  ACCORDION
+     Height is animated from a measured pixel value, then released to auto so
+     the panel reflows correctly if the window is resized while open.
+     ---------------------------------------------------------------------- */
+  function initAccordion() {
+    const wrap = $('#accordion');
+    if (!wrap || !D.FAQ) return;
+
+    D.FAQ.forEach((item, i) => {
+      const id = 'faq-' + i;
+      const row = el('div', { class: 'acc' });
+      row.innerHTML = `
+        <h3 class="acc__h">
+          <button class="acc__btn" type="button" aria-expanded="false" aria-controls="${id}">
+            <span class="acc__q">${item.q}</span>
+            <span class="acc__sign" aria-hidden="true"></span>
+          </button>
+        </h3>
+        <div class="acc__panel" id="${id}" role="region" hidden>
+          <div class="acc__inner">${item.a.map(p => `<p>${p}</p>`).join('')}</div>
+        </div>`;
+      wrap.appendChild(row);
+    });
+
+    const panels = $$('.acc__panel', wrap);
+
+    function close(panel) {
+      const btn = wrap.querySelector(`[aria-controls="${panel.id}"]`);
+      if (!btn || btn.getAttribute('aria-expanded') === 'false') return;
+      btn.setAttribute('aria-expanded', 'false');
+      panel.style.height = panel.scrollHeight + 'px';   // fix current height
+      requestAnimationFrame(() => { panel.style.height = '0px'; });
+      const done = () => { panel.hidden = true; panel.removeEventListener('transitionend', done); };
+      MOTION() ? panel.addEventListener('transitionend', done) : done();
+    }
+
+    function open(panel) {
+      const btn = wrap.querySelector(`[aria-controls="${panel.id}"]`);
+      btn.setAttribute('aria-expanded', 'true');
+      panel.hidden = false;
+      panel.style.height = '0px';
+      requestAnimationFrame(() => { panel.style.height = panel.scrollHeight + 'px'; });
+      const done = (e) => {
+        if (e && e.propertyName !== 'height') return;
+        panel.style.height = 'auto';
+        panel.removeEventListener('transitionend', done);
+      };
+      MOTION() ? panel.addEventListener('transitionend', done) : done();
+    }
+
+    wrap.addEventListener('click', (e) => {
+      const btn = e.target.closest('.acc__btn');
+      if (!btn) return;
+      const panel = document.getElementById(btn.getAttribute('aria-controls'));
+      const isOpen = btn.getAttribute('aria-expanded') === 'true';
+      panels.forEach(p => { if (p !== panel) close(p); });   // one at a time
+      isOpen ? close(panel) : open(panel);
+    });
+  }
+
+
+  /* 13  CONTACT FORM
+     No backend is assumed. Set FORM_ENDPOINT to your own URL to POST instead
+     of falling back to a composed email.
+     ---------------------------------------------------------------------- */
+  const FORM_ENDPOINT = null;
+
+  function initForm() {
+    const form = $('#contactForm');
+    const status = $('#formStatus');
+    if (!form) return;
+
+    const rules = {
+      fName: (v) => v.trim().length >= 2 || 'Enter your name.',
+      fEmail: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || 'Enter an email address we can reply to.',
+      fMsg: (v) => v.trim().length >= 20 || 'A sentence or two about the decision helps us route this. 20 characters minimum.'
+    };
+
+    function validateField(id) {
+      const input = document.getElementById(id);
+      const field = input.closest('.field');
+      const slot = form.querySelector(`[data-error-for="${id}"]`);
+      const result = rules[id](input.value);
+      const ok = result === true;
+      field.classList.toggle('has-error', !ok);
+      input.setAttribute('aria-invalid', String(!ok));
+      if (slot) slot.textContent = ok ? '' : result;
+      return ok;
+    }
+
+    // Validate on blur, and clear the error as soon as it is fixed
+    Object.keys(rules).forEach(id => {
+      const input = document.getElementById(id);
+      if (!input) return;
+      input.addEventListener('blur', () => validateField(id));
+      input.addEventListener('input', () => {
+        if (input.closest('.field').classList.contains('has-error')) validateField(id);
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const ok = Object.keys(rules).map(validateField).every(Boolean);
+
+      if (!ok) {
+        status.className = 'form__status';
+        status.textContent = 'Three fields need attention before this can go.';
+        form.querySelector('.has-error input, .has-error textarea')?.focus();
+        return;
+      }
+
+      const payload = Object.fromEntries(new FormData(form).entries());
+
+      if (FORM_ENDPOINT) {
+        status.className = 'form__status';
+        status.textContent = 'Sending…';
+        try {
+          const res = await fetch(FORM_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error(res.status);
+          form.reset();
+          status.className = 'form__status is-ok';
+          status.textContent = 'Sent. We reply within two working days.';
+        } catch (err) {
+          status.className = 'form__status';
+          status.textContent = 'That did not send. Try again, or email enquiries directly.';
+        }
+        return;
+      }
+
+      // No endpoint configured: hand the reader a composed message instead of
+      // pretending to have delivered it.
+      const body = `${payload.message}\n\n— ${payload.name}${payload.org ? ', ' + payload.org : ''}\n${payload.email}`;
+      const href = 'mailto:enquiries@example.org'
+        + '?subject=' + encodeURIComponent('Meridian enquiry — ' + payload.topic)
+        + '&body=' + encodeURIComponent(body);
+      window.location.href = href;
+      status.className = 'form__status is-ok';
+      status.textContent = 'Your email client should now be open with this drafted. Nothing has been sent yet.';
+    });
+  }
+
+
+  /* 14  BACK TO TOP
+     ---------------------------------------------------------------------- */
+  function initToTop() {
+    const btn = $('#toTop');
+    if (!btn) return;
+
+    const update = onFrame(() => {
+      btn.classList.toggle('is-on', window.scrollY > window.innerHeight * 0.6);
+    });
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+
+    btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: MOTION() ? 'smooth' : 'auto' });
+      // Return focus to the top of the document for keyboard users
+      $('#masthead').querySelector('a')?.focus({ preventScroll: true });
+    });
+  }
+
+
+  /* 15  BOOT
+     ---------------------------------------------------------------------- */
+  function boot() {
+    initLoader();
+
+    // Content first, so observers can see everything that was rendered
+    initHorizon();
+    initAtlas();
+    initEthics();
+    initTimeline();
+    initCompare();
+    initPrinciples();
+    initLedger();
+    initResources();
+    initAccordion();
+
+    // Then behaviour
+    initMasthead();
+    initReveal();
+    observeReveals();
+    initCounters();
+    initCursor();
+    initField();
+    initForm();
+    initToTop();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+})();
+
+</script>
+</body>
+</html>
